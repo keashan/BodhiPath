@@ -2,9 +2,27 @@
 import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 import { Language, DailyDrop } from "../types";
 
-// NOTE: In a real production app, ensure API keys are handled securely.
-// For this demo, we assume process.env.API_KEY is available.
-const apiKey = process.env.API_KEY || 'DUMMY_KEY_FOR_DEMO';
+// Safely access API key. 
+// Checks process.env (Node/Standard) and import.meta.env (Vite/Client)
+const getApiKey = () => {
+  // Check standard process.env (if polyfilled or Next.js)
+  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+    return process.env.API_KEY;
+  }
+  
+  // Check Vite environment variables (Standard for React on Vercel)
+  // @ts-ignore - import.meta is a valid property in modern bundlers
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
+    // @ts-ignore
+    return import.meta.env.VITE_API_KEY;
+  }
+
+  // Warning: Chat features will fail without a key
+  console.warn("Gemini API Key is missing. Please add VITE_API_KEY to your environment variables.");
+  return 'DUMMY_KEY_FOR_DEMO'; 
+};
+
+const apiKey = getApiKey();
 
 const ai = new GoogleGenAI({ apiKey });
 
