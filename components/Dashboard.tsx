@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Globe, Compass, Loader2, Share2, Sparkles, ChevronRight } from 'lucide-react';
-import { UserPreferences, AppView, DailyDrop, AppPage } from '../types';
+import { UserPreferences, AppView, DailyDrop } from '../types';
 import { UI_TEXT } from '../constants';
 import ChatInterface from './ChatInterface';
 import MeditationHall from './MeditationHall';
@@ -18,10 +18,9 @@ interface DashboardProps {
   preferences: UserPreferences;
   onLogout: () => void;
   onUpdatePreferences: (newPrefs: UserPreferences) => Promise<void>;
-  onNavigate: (page: AppPage) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePreferences, onNavigate }) => {
+const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePreferences }) => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
   const [dailyDrop, setDailyDrop] = useState<DailyDrop | null>(null);
   const [dropHistory, setDropHistory] = useState<DailyDrop[]>([]);
@@ -125,18 +124,18 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
   const AppFooter = () => (
     <footer className="mt-auto pt-12 pb-6 text-center border-t border-stone-100 w-full px-4">
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-4">
-            <button 
-                onClick={() => onNavigate('TERMS')}
-                className={`text-xs text-stone-400 hover:text-stone-600 transition-colors uppercase tracking-widest font-bold ${preferences.language === 'si' ? 'font-sinhala' : ''}`}
+            <a 
+                href="#/terms"
+                className={`text-xs text-stone-400 hover:text-orange-600 transition-colors uppercase tracking-widest font-bold underline-offset-4 hover:underline ${preferences.language === 'si' ? 'font-sinhala' : ''}`}
             >
                 {t.terms}
-            </button>
-            <button 
-                onClick={() => onNavigate('PRIVACY')}
-                className={`text-xs text-stone-400 hover:text-stone-600 transition-colors uppercase tracking-widest font-bold ${preferences.language === 'si' ? 'font-sinhala' : ''}`}
+            </a>
+            <a 
+                href="#/privacy"
+                className={`text-xs text-stone-400 hover:text-orange-600 transition-colors uppercase tracking-widest font-bold underline-offset-4 hover:underline ${preferences.language === 'si' ? 'font-sinhala' : ''}`}
             >
                 {t.privacy}
-            </button>
+            </a>
         </div>
         <p className="text-[10px] text-stone-300 font-serif tracking-wider uppercase">© 2025 BodhiPath • Path to Liberation</p>
     </footer>
@@ -371,7 +370,7 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
                 )}
             </div>
 
-            {/* Right Sidebar (Ad Space Placeholder) */}
+            {/* Right Sidebar */}
             <aside className="hidden xl:flex w-80 bg-[#faf9f8] border-l border-stone-100 flex-col p-8 shrink-0">
                 <div className="w-full h-full rounded-[2.5rem] bg-white border border-stone-100 shadow-sm flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 opacity-20" />

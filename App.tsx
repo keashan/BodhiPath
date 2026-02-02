@@ -16,6 +16,25 @@ function App() {
   const [isGuest, setIsGuest] = useState(false);
   const [currentPage, setCurrentPage] = useState<AppPage>('APP');
 
+  // Handle Hash Routing
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#/terms') {
+        setCurrentPage('TERMS');
+      } else if (hash === '#/privacy') {
+        setCurrentPage('PRIVACY');
+      } else {
+        setCurrentPage('APP');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Check on mount
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   useEffect(() => {
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -79,17 +98,14 @@ function App() {
     } else {
         try {
             await signOut(auth);
-            // We rely on onAuthStateChanged to clear preferences and user state
-            // This prevents the "Onboarding" screen from flashing before the Auth screen appears
         } catch (error) {
             console.error("Logout failed:", error);
         }
     }
   };
 
-  const handleNavigate = (page: AppPage) => {
-    setCurrentPage(page);
-    window.scrollTo(0, 0);
+  const handleNavigateBack = () => {
+    window.location.hash = ''; // This triggers the hashchange listener to set page to APP
   };
 
   if (loading) {
@@ -100,17 +116,25 @@ function App() {
     );
   }
 
-  // Legal Pages (accessible regardless of auth state)
+  // Legal Pages (accessible regardless of auth state via hash)
   if (currentPage === 'TERMS') {
-    return <div className="min-h-screen bg-stone-50"><LegalView type="terms" language={preferences?.language || 'en'} onBack={() => handleNavigate('APP')} /></div>;
+    return (
+      <div className="min-h-screen bg-stone-50">
+        <LegalView type="terms" language={preferences?.language || 'en'} onBack={handleNavigateBack} />
+      </div>
+    );
   }
   if (currentPage === 'PRIVACY') {
-    return <div className="min-h-screen bg-stone-50"><LegalView type="privacy" language={preferences?.language || 'en'} onBack={() => handleNavigate('APP')} /></div>;
+    return (
+      <div className="min-h-screen bg-stone-50">
+        <LegalView type="privacy" language={preferences?.language || 'en'} onBack={handleNavigateBack} />
+      </div>
+    );
   }
 
-  // App Pages
+  // Auth/App Logic
   if (!user && !isGuest) {
-    return <Auth onGuestLogin={handleGuestLogin} onNavigate={handleNavigate} />;
+    return <Auth onGuestLogin={handleGuestLogin} />;
   }
 
   return (
@@ -122,7 +146,6 @@ function App() {
           preferences={preferences} 
           onLogout={handleLogout} 
           onUpdatePreferences={handleUpdatePreferences} 
-          onNavigate={handleNavigate}
         />
       )}
     </div>
