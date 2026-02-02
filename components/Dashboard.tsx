@@ -104,6 +104,11 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
     }
   };
 
+  const navigateTo = (hash: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.location.hash = hash;
+  };
+
   const NavItem = ({ view, icon: Icon, label, hasUpdate }: { view: AppView, icon: any, label: string, hasUpdate?: boolean }) => (
     <button 
       onClick={() => { setCurrentView(view); setSidebarOpen(false); }}
@@ -126,12 +131,14 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-4">
             <a 
                 href="#/terms"
+                onClick={navigateTo('#/terms')}
                 className={`text-xs text-stone-400 hover:text-orange-600 transition-colors uppercase tracking-widest font-bold underline-offset-4 hover:underline ${preferences.language === 'si' ? 'font-sinhala' : ''}`}
             >
                 {t.terms}
             </a>
             <a 
                 href="#/privacy"
+                onClick={navigateTo('#/privacy')}
                 className={`text-xs text-stone-400 hover:text-orange-600 transition-colors uppercase tracking-widest font-bold underline-offset-4 hover:underline ${preferences.language === 'si' ? 'font-sinhala' : ''}`}
             >
                 {t.privacy}

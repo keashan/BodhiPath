@@ -95,6 +95,12 @@ export const UI_TEXT = {
     finalSubtitle: "May your path be filled with wisdom and compassion.",
     enterBtn: "Enter BodhiPath",
     
+    // Website Navigation
+    navHome: "Home",
+    navAbout: "About Us",
+    navContact: "Contact Us",
+    navPortal: "Open App",
+    
     // Dashboard
     askMonk: "Ask the AI Monk",
     meditateNow: "Meditate Now",
@@ -180,6 +186,12 @@ export const UI_TEXT = {
     finalTitle: "ඔබ සූදානම්.",
     finalSubtitle: "ඔබේ මාර්ගය ප්‍රඥාව සහ කරුණාවෙන් පිරියි.",
     enterBtn: "බෝධි මාර්ගයට පිවිසෙන්න",
+
+    // Website Navigation
+    navHome: "මුල් පිටුව",
+    navAbout: "අප ගැන",
+    navContact: "සම්බන්ධ වන්න",
+    navPortal: "යෙදුමට පිවිසෙන්න",
 
     // Dashboard
     askMonk: "AI හිමිනමගෙන් විමසන්න",

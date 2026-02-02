@@ -13,7 +13,7 @@ export enum AppView {
   DAILY_DROPS = 'DAILY_DROPS'
 }
 
-export type AppPage = 'APP' | 'TERMS' | 'PRIVACY';
+export type AppPage = 'HOME' | 'ABOUT' | 'CONTACT' | 'TERMS' | 'PRIVACY' | 'APP';
 
 export interface UserPreferences {
   hasCompletedOnboarding: boolean;
