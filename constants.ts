@@ -51,6 +51,7 @@ export const UI_TEXT = {
     feedbackTitle: "How was your session?",
     feedbackPlaceholder: "Share your experience...",
     selectMethod: "Select Method",
+    instructions: "Instructions",
     
     // Journal
     newEntry: "New Entry",
@@ -118,6 +119,7 @@ export const UI_TEXT = {
     feedbackTitle: "ඔබේ අත්දැකීම කෙසේද?",
     feedbackPlaceholder: "මෙහි සටහන් කරන්න...",
     selectMethod: "භාවනා ක්‍රමය තෝරන්න",
+    instructions: "උපදෙස්",
 
     // Journal
     newEntry: "නව සටහනක්",
@@ -157,27 +159,100 @@ export const GOAL_OPTIONS = {
 
 export const MEDITATION_TYPES = [
   {
-      id: 'anapana',
-      title: { en: "Anapanasati (Breath)", si: "ආනාපානසති (හුස්ම)" },
-      desc: { en: "Focus on the natural breath.", si: "ස්වභාවික හුස්ම කෙරෙහි අවධානය." },
-      icon: 'Wind'
-  },
-  {
       id: 'metta',
       title: { en: "Metta (Loving-Kindness)", si: "මෛත්‍රී භාවනාව" },
       desc: { en: "Cultivate boundless love.", si: "අසීමිත මෛත්‍රිය වඩන්න." },
+      fullDescription: {
+          en: "Metta is the wish for the welfare and happiness of others. It spreads loving-kindness to all beings without exception.",
+          si: "අන්‍යයන්ට දුක් නො වෙනවාට සැප ඇති වෙනවාට යහපතක් වෙනවාට අනුන්ගේ යහපත් අදහස් ඉටු වෙනවාට අනුන් දියුණු වෙනවාට උසස් වෙනවාට කැමති බව මෛත්‍රිය ය. අන්‍යයෝ නිදුක් වෙත්වා, නිරෝගි වෙත්වා, සුවපත් වෙත්වා යනාදීන් මෛත්‍රිය අන්‍යයන් කෙරෙහි නැවත නැවත පැතිරවීම: තවත් ක්‍ර‍මයකින් කියත හොත් ස්වකීය චිත්තයෙන් අන්‍යයන්ට සෙත් කිරීම මෛත්‍රී භාවනාව නම් වේ. එය නොබෝ කලකින් ම ඵල දැකිය හැකි වන්නා වූ චතුර්ථ ධ්‍යානය තෙක් ගෙන යා හැක්කා වූ භාවනාවෙකි."
+      },
+      instructions: {
+          en: [
+            "May I be free from enmity, affliction, and anxiety. May I be happy.",
+            "May my dear ones be free from enmity, affliction, and anxiety. May they be happy.",
+            "May my enemies be free from enmity, affliction, and anxiety. May they be happy.",
+            "May neutral beings be free from enmity, affliction, and anxiety. May they be happy.",
+            "May all beings be free from enmity, affliction, and anxiety. May they be happy."
+          ],
+          si: [
+            "මම වෛර නැත්තේ වෙම් වා, දොම්නස් නැත්තේ වෙම් වා, නිදුක් වෙම් වා, සුවපත් වෙම්වා.",
+            "මාගේ හිතවත්හු වෛර නැත්තෝ වෙත්වා, දොම්නස් නැත්තෝ වෙත්වා, නිදුක් වෙත්වා, සුවපත් වෙත්වා.",
+            "මාගේ සතුරෝ වෛර නැත්තෝ වෙත්වා, දොම්නස් නැත්තෝ වෙත්වා, නිදුක් වෙත්වා, සුවපත් වෙත්වා.",
+            "මා හට මධ්‍යස්ථ සත්ත්වයෝ වෛර නැත්තෝ වෙත්වා, දොම්නස් නැත්තෝ වෙත්වා, නිදුක් වෙත්වා, සුවපත් වෙත්වා.",
+            "සකල සත්ත්වයෝ වෛර නැත්තෝ වෙත්වා, දොම්නස් නැත්තෝ වෙත්වා, නිදුක් වෙත්වා, සුවපත් වෙත්වා."
+          ]
+      },
       icon: 'Heart'
+  },
+  {
+      id: 'anapana',
+      title: { en: "Anapanasati (Breath)", si: "ආනාපානසති (හුස්ම)" },
+      desc: { en: "Focus on the natural breath.", si: "ස්වභාවික හුස්ම කෙරෙහි අවධානය." },
+      fullDescription: {
+          en: "Anapanasati involves focusing attention on the breath. It calms the mind and prepares it for deeper insight.",
+          si: "ආනාපානසති යනු හුස්ම ඉහළ පහළ යාම පිළිබඳ සිහිය පිහිටුවා ගැනීමයි. මෙය සිත සමාධිගත කිරීමට සහ ප්‍රඥාව වැඩීමට උපකාරී වේ."
+      },
+      instructions: {
+          en: [
+            "Find a comfortable sitting posture, keeping your back straight.",
+            "Focus your attention at the entrance of your nostrils.",
+            "Observe the natural flow of breath coming in and going out.",
+            "If your mind wanders, gently bring it back to the breath."
+          ],
+          si: [
+            "සුවපහසු ලෙස හිඳගෙන කය ඍජුව තබාගන්න.",
+            "සිහිය නාසිකාග්‍රය හෝ තොල මත පිහිටුවා ගන්න.",
+            "ස්වභාවික හුස්ම කෙරෙහි පමණක් අවධානය යොමු කරන්න.",
+            "වෙනත් අරමුණු වලට සිත ගියහොත් නැවත හුස්ම වෙත සිත ගෙන එන්න."
+          ]
+      },
+      icon: 'Wind'
   },
   {
       id: 'vipassana',
       title: { en: "Vipassana (Body Scan)", si: "විපස්සනා (ශරීර නිරීක්ෂණය)" },
       desc: { en: "Observe sensations equanimously.", si: "ශරීරයේ දැනීම් උපේක්ෂාවෙන් විඳීම." },
+      fullDescription: {
+          en: "Vipassana means seeing things as they really are. By observing bodily sensations, one realizes the nature of impermanence.",
+          si: "විපස්සනා යනු ඇති දේ ඇති සැටියෙන් දැකීමයි. නාම රූප ධර්මයන්ගේ අනිත්‍ය, දුක්ඛ, අනාත්ම ස්වභාවය අවබෝධ කර ගැනීම මෙහි අරමුණයි."
+      },
+      instructions: {
+          en: [
+            "Focus your attention on the top of your head.",
+            "Slowly move your attention down through your body.",
+            "Observe any sensations (heat, cold, tingling) objectively.",
+            "Do not react with craving or aversion; just observe."
+          ],
+          si: [
+            "හිස මුදුනේ සිට පාදාන්තය දක්වා අවධානය යොමු කරන්න.",
+            "ශරීරයේ හටගන්නා සංවේදනයන් (උණුසුම, සීතල, හිරි වැටීම) දෙස උපේක්ෂාවෙන් බලන්න.",
+            "ඒවායේ ඇති වීම සහ නැති වීම නිරීක්ෂණය කරන්න.",
+            "කිසිදු සංවේදනයක් කෙරෙහි ඇලීමක් හෝ ගැටීමක් ඇති කර නොගන්න."
+          ]
+      },
       icon: 'ScanFace'
   },
   {
       id: 'walking',
       title: { en: "Walking Meditation", si: "සක්මන් භාවනාව" },
       desc: { en: "Mindfulness in motion.", si: "ගමන් කරන විට සිහිය පිහිටුවා ගැනීම." },
+      fullDescription: {
+        en: "Walking meditation brings mindfulness into movement, focusing on the sensations of walking.",
+        si: "සක්මන් භාවනාව යනු ඇවිදින විට සිහිය පවත්වා ගැනීමයි. එය සමාධිය පවත්වා ගැනීමට පහසු ඉරියව්වකි."
+      },
+      instructions: {
+        en: [
+            "Walk slowly along a straight path.",
+            "Focus on the lifting, moving, and placing of each foot.",
+            "Keep your gaze lowered and mind focused on the movement."
+        ],
+        si: [
+            "කෙටි දුරක් සෙමින් ඇවිදින්න.",
+            "පාදය එසවීම, ගෙන යාම, සහ තැබීම ගැන අවධානය යොමු කරන්න.",
+            "ඇස් පහතට යොමු කර තබා ගන්න.",
+            "වෙනත් අරමුණු වලට සිත ගියහොත් නැවත පාදයේ චලනය වෙත සිත ගෙන එන්න."
+        ]
+      },
       icon: 'Footprints'
   }
 ];
@@ -210,16 +285,16 @@ export const CORE_LESSONS: Lesson[] = [
 ];
 
 export const POYA_DAYS_2025 = [
-  { date: "2025-01-13", name: "Duruthu Poya", si: "දුරුතු පොහොය" },
-  { date: "2025-02-12", name: "Navam Poya", si: "නවම් පොහොය" },
-  { date: "2025-03-13", name: "Medin Poya", si: "මැදින් පොහොය" },
-  { date: "2025-04-12", name: "Bak Poya", si: "බක් පොහොය" },
-  { date: "2025-05-12", name: "Vesak Poya", si: "වෙසක් පොහොය" },
-  { date: "2025-06-11", name: "Poson Poya", si: "පොසොන් පොහොය" },
-  { date: "2025-07-10", name: "Esala Poya", si: "ඇසළ පොහොය" },
-  { date: "2025-08-08", name: "Nikini Poya", si: "නිකිණි පොහොය" },
-  { date: "2025-09-07", name: "Binara Poya", si: "බිනර පොහොය" },
-  { date: "2025-10-06", name: "Vap Poya", si: "වප් පොහොය" },
-  { date: "2025-11-05", name: "Il Poya", si: "ඉල් පොහොය" },
-  { date: "2025-12-04", name: "Unduvap Poya", si: "උඳුවප් පොහොය" }
+  { date: "2025-01-13", name: "Duruthu Full Moon Poya", si: "දුරුතු පුර පසළොස්වක පොහොය" },
+  { date: "2025-02-12", name: "Navam Full Moon Poya", si: "නවම් පුර පසළොස්වක පොහොය" },
+  { date: "2025-03-13", name: "Medin Full Moon Poya", si: "මැදින් පුර පසළොස්වක පොහොය" },
+  { date: "2025-04-12", name: "Bak Full Moon Poya", si: "බක් පුර පසළොස්වක පොහොය" },
+  { date: "2025-05-12", name: "Vesak Full Moon Poya", si: "වෙසක් පුර පසළොස්වක පොහොය" },
+  { date: "2025-06-11", name: "Poson Full Moon Poya", si: "පොසොන් පුර පසළොස්වක පොහොය" },
+  { date: "2025-07-10", name: "Esala Full Moon Poya", si: "ඇසළ පුර පසළොස්වක පොහොය" },
+  { date: "2025-08-09", name: "Nikini Full Moon Poya", si: "නිකිණි පුර පසළොස්වක පොහොය" },
+  { date: "2025-09-07", name: "Binara Full Moon Poya", si: "බිනර පුර පසළොස්වක පොහොය" },
+  { date: "2025-10-06", name: "Vap Full Moon Poya", si: "වප් පුර පසළොස්වක පොහොය" },
+  { date: "2025-11-05", name: "Il Full Moon Poya", si: "ඉල් පුර පසළොස්වක පොහොය" },
+  { date: "2025-12-04", name: "Unduvap Full Moon Poya", si: "උඳුවප් පුර පසළොස්වක පොහොය" }
 ];

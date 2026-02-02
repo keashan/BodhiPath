@@ -1,26 +1,50 @@
+
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { UserPreferences } from "../types";
 
-// Configuration from environment variables or placeholders
-const firebaseConfig = {
-  apiKey: "AIzaSyDVwA7P8cGAkdMw7VrCI4ZHVJ2OAxEuzcs",
-  authDomain: "bodhipath-2d6ad.firebaseapp.com",
-  projectId: "bodhipath-2d6ad",
-  storageBucket: "bodhipath-2d6ad.firebasestorage.app",
-  messagingSenderId: "1069054638776",
-  appId: "1:1069054638776:web:efc5eda96c50406c5c924d",
-  measurementId: "G-RRYL822MC2"
+// Security: Load config from environment variables
+// Ensure these are set in your Vercel project settings
+const getEnvVar = (key: string) => {
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
+    // @ts-ignore
+    return import.meta.env[key];
+  }
+  // @ts-ignore
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    // @ts-ignore
+    return process.env[key];
+  }
+  return '';
 };
 
-// Initialize Firebase
+const firebaseConfig = {
+  apiKey: getEnvVar('VITE_FIREBASE_API_KEY'),
+  authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN'),
+  projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID'),
+  storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: getEnvVar('VITE_FIREBASE_APP_ID'),
+  measurementId: getEnvVar('VITE_FIREBASE_MEASUREMENT_ID')
+};
+
+// Validate config
+const isConfigValid = Object.values(firebaseConfig).every(v => v !== '');
+
+if (!isConfigValid) {
+  console.warn("Firebase config missing. Please set VITE_FIREBASE_... environment variables.");
+}
+
+// Initialize Firebase only if config is valid to prevent crashes
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
+  if (!isConfigValid) throw new Error("Firebase configuration missing.");
   try {
     await signInWithPopup(auth, googleProvider);
   } catch (error) {
@@ -33,12 +57,16 @@ export const signInWithGoogle = async () => {
 const getStorageKey = (uid: string) => `bodhi_user_${uid}`;
 
 export const saveUserProfile = async (uid: string, data: UserPreferences) => {
+    if (!isConfigValid) {
+        // Fallback for missing config (Guest mode mostly)
+        localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
+        return;
+    }
     try {
         await setDoc(doc(db, "users", uid), data, { merge: true });
     } catch (error: any) {
-        // Fallback to localStorage if permission denied (Firestore rules) or unavailable
+        // Fallback to localStorage if permission denied or unavailable
         if (error.code === 'permission-denied' || error.code === 'unavailable') {
-            console.warn("Firestore permission denied. Falling back to local storage for user profile.");
             localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
         } else {
             console.error("Error saving user profile", error);
@@ -48,6 +76,10 @@ export const saveUserProfile = async (uid: string, data: UserPreferences) => {
 };
 
 export const getUserProfile = async (uid: string): Promise<UserPreferences | null> => {
+    if (!isConfigValid) {
+         const localData = localStorage.getItem(getStorageKey(uid));
+         return localData ? JSON.parse(localData) : null;
+    }
     try {
         const docRef = doc(db, "users", uid);
         const docSnap = await getDoc(docRef);
@@ -56,9 +88,7 @@ export const getUserProfile = async (uid: string): Promise<UserPreferences | nul
         }
         return null;
     } catch (error: any) {
-        // Fallback to localStorage if permission denied
         if (error.code === 'permission-denied' || error.code === 'unavailable') {
-             console.warn("Firestore permission denied. Checking local storage fallback.");
              const localData = localStorage.getItem(getStorageKey(uid));
              if (localData) {
                  return JSON.parse(localData);
