@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Globe } from 'lucide-react';
 import { UserPreferences, AppView, DailyDrop } from '../types';
@@ -11,6 +10,7 @@ import SuttaExplorer from './SuttaExplorer';
 import { generateDailyDharma } from '../services/geminiService';
 import { auth } from '../services/firebase';
 import Logo from './Logo';
+import ConfirmModal from './ConfirmModal';
 
 interface DashboardProps {
   preferences: UserPreferences;
@@ -22,6 +22,7 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
   const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
   const [dailyDrop, setDailyDrop] = useState<DailyDrop | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const t = UI_TEXT[preferences.language];
 
   useEffect(() => {
@@ -58,6 +59,16 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
 
   return (
     <div className="flex h-screen bg-stone-50 overflow-hidden">
+      <ConfirmModal 
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={onLogout}
+        title={preferences.language === 'si' ? 'පිටවීම' : 'Sign Out'}
+        message={preferences.language === 'si' ? 'ඔබට මෙම සැසියෙන් ඉවත් වීමට අවශ්‍ය බව විශ්වාසද?' : 'Are you sure you want to sign out? Your journey progress is saved.'}
+        confirmText={preferences.language === 'si' ? 'ඔව්, ඉවත් වන්න' : 'Sign Out'}
+        cancelText={preferences.language === 'si' ? 'නැහැ' : 'Cancel'}
+        isDestructive={true}
+      />
       
       {/* Sidebar (Mobile Overlay + Desktop) */}
       <div className={`fixed inset-0 bg-black/20 z-20 md:hidden ${sidebarOpen ? 'block' : 'hidden'}`} onClick={() => setSidebarOpen(false)} />
@@ -94,11 +105,7 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
 
              {/* Sign Out Button */}
              <button 
-                onClick={() => {
-                    if (window.confirm("Are you sure you want to exit?")) {
-                        onLogout();
-                    }
-                }}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="w-full flex items-center space-x-3 p-3 rounded-xl text-stone-400 hover:bg-red-50 hover:text-red-600 transition-colors mt-2"
              >
                 <LogOut size={18} />

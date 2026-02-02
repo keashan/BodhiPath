@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, Square, Wind, Star, X, Heart, ScanFace, Footprints, Check, Info } from 'lucide-react';
 import { Language } from '../types';
@@ -125,15 +124,16 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
             exit={{ opacity: 0, height: 0 }}
             className="w-full max-w-2xl mb-6"
           >
-            <h2 className={`text-2xl font-serif text-center text-stone-800 mb-6 ${language === 'si' ? 'font-sinhala' : ''}`}>
-               {language === 'si' ? 'භාවනා ශාලාව' : 'Meditation Hall'}
-            </h2>
+            {/* Title Section */}
+            <div className="text-center mb-6">
+                <h2 className={`text-3xl font-serif text-stone-800 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                    {language === 'si' ? 'භාවනා ශාලාව' : 'Meditation Hall'}
+                </h2>
+                <p className="text-stone-500 text-sm mt-1">Select your practice for today</p>
+            </div>
             
-            <h4 className={`text-sm font-bold text-stone-400 uppercase tracking-widest mb-3 ${language === 'si' ? 'font-sinhala' : ''}`}>
-               {t.selectMethod}
-            </h4>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {/* Method Selection Grid - PRIMARY VISUAL */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                 {MEDITATION_TYPES.map((method) => (
                     <button
                       key={method.id}
@@ -141,21 +141,21 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
                           setSelectedMethod(method);
                           setGuidance(''); 
                       }}
-                      className={`p-3 rounded-xl border text-center flex flex-col items-center gap-2 transition-all relative overflow-hidden ${
+                      className={`p-4 rounded-xl border text-center flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden shadow-sm hover:shadow-md ${
                           selectedMethod.id === method.id 
-                          ? 'bg-white border-orange-500 shadow-md ring-1 ring-orange-200' 
-                          : 'bg-white/50 border-stone-200 hover:border-orange-300'
+                          ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-200 ring-offset-1 transform scale-105' 
+                          : 'bg-white border-stone-200 hover:border-orange-300 hover:bg-orange-50'
                       }`}
                     >
-                        <div className={`${selectedMethod.id === method.id ? 'text-orange-600' : 'text-stone-400'}`}>
+                        <div className={`p-2 rounded-full ${selectedMethod.id === method.id ? 'bg-orange-100 text-orange-600' : 'bg-stone-100 text-stone-400'}`}>
                             {getIcon(method.icon, 24)}
                         </div>
                         <span className={`font-bold text-xs ${language === 'si' ? 'font-sinhala' : ''}`}>
                             {language === 'si' ? method.title.si : method.title.en}
                         </span>
                         {selectedMethod.id === method.id && (
-                            <div className="absolute top-1 right-1 text-orange-500">
-                                <Check size={12} />
+                            <div className="absolute top-2 right-2 text-orange-500">
+                                <Check size={14} strokeWidth={3} />
                             </div>
                         )}
                     </button>
@@ -163,24 +163,27 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
             </div>
 
             {/* Selected Method Details */}
-            <div className="bg-white/70 p-5 rounded-2xl border border-stone-100 shadow-sm mb-6">
-               <h3 className={`font-serif font-bold text-lg text-stone-800 mb-2 flex items-center gap-2 ${language === 'si' ? 'font-sinhala' : ''}`}>
-                  {getIcon(selectedMethod.icon, 20)}
-                  {language === 'si' ? selectedMethod.title.si : selectedMethod.title.en}
-               </h3>
-               <p className={`text-stone-600 leading-relaxed text-sm mb-4 ${language === 'si' ? 'font-sinhala' : ''}`}>
+            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-stone-200 shadow-sm mb-6">
+               <div className="flex items-center gap-3 mb-3 border-b border-stone-100 pb-3">
+                   <div className="text-orange-500">{getIcon(selectedMethod.icon, 20)}</div>
+                   <h3 className={`font-serif font-bold text-lg text-stone-800 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                      {language === 'si' ? selectedMethod.title.si : selectedMethod.title.en}
+                   </h3>
+               </div>
+               
+               <p className={`text-stone-600 leading-relaxed text-sm mb-5 ${language === 'si' ? 'font-sinhala' : ''}`}>
                   {getDescription()}
                </p>
                
-               <div className="bg-orange-50/50 rounded-xl p-4 border border-orange-100">
-                   <h4 className={`text-xs font-bold text-orange-800 uppercase tracking-wider mb-2 flex items-center gap-1 ${language === 'si' ? 'font-sinhala' : ''}`}>
-                      <Info size={12} /> {language === 'si' ? 'උපදෙස්' : 'Instructions'}
+               <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
+                   <h4 className={`text-xs font-bold text-orange-800 uppercase tracking-wider mb-3 flex items-center gap-1 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                      <Info size={14} /> {language === 'si' ? 'උපදෙස් (Instructions)' : 'Instructions'}
                    </h4>
                    <ul className="space-y-2">
                        {getInstructions()?.map((inst, idx) => (
                            <li key={idx} className={`text-sm text-stone-700 flex gap-2 ${language === 'si' ? 'font-sinhala' : ''}`}>
-                               <span className="text-orange-400">•</span>
-                               {inst}
+                               <span className="text-orange-400 mt-1">•</span>
+                               <span className="flex-1">{inst}</span>
                            </li>
                        ))}
                    </ul>
@@ -188,16 +191,16 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
             </div>
 
             {/* Duration Selector */}
-            <div className="flex items-center justify-center">
-                 <span className={`text-stone-500 text-sm mr-4 ${language === 'si' ? 'font-sinhala' : ''}`}>{t.duration}:</span>
+            <div className="bg-white/50 p-4 rounded-2xl flex items-center justify-center gap-2 border border-stone-200">
+                 <span className={`text-stone-500 text-sm font-bold uppercase tracking-wider mr-2 ${language === 'si' ? 'font-sinhala' : ''}`}>{t.duration}:</span>
                  {[5, 10, 20, 30].map(m => (
                     <button 
                         key={m}
                         onClick={() => setDuration(m)}
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all mx-1 ${
+                        className={`w-12 h-10 rounded-lg text-sm font-bold border transition-all ${
                             duration === m 
-                            ? 'bg-orange-100 border-orange-400 text-orange-900' 
-                            : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
+                            ? 'bg-stone-800 border-stone-800 text-white shadow-lg' 
+                            : 'bg-white border-stone-200 text-stone-500 hover:bg-stone-100'
                         }`}
                     >
                         {m}m
@@ -217,46 +220,46 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
             </h2>
 
             {/* Timer Circle */}
-            <div className="relative w-56 h-56 mb-8 shrink-0">
+            <div className="relative w-64 h-64 mb-10 shrink-0">
                 <svg className="w-full h-full transform -rotate-90">
                     <circle
-                    cx="112"
-                    cy="112"
-                    r="104"
+                    cx="128"
+                    cy="128"
+                    r="120"
                     stroke="currentColor"
                     strokeWidth="8"
                     fill="transparent"
                     className="text-stone-200"
                     />
                     <circle
-                    cx="112"
-                    cy="112"
-                    r="104"
+                    cx="128"
+                    cy="128"
+                    r="120"
                     stroke="currentColor"
                     strokeWidth="8"
                     fill="transparent"
-                    strokeDasharray={2 * Math.PI * 104}
-                    strokeDashoffset={2 * Math.PI * 104 * (1 - timeLeft / (duration * 60))}
+                    strokeDasharray={2 * Math.PI * 120}
+                    strokeDashoffset={2 * Math.PI * 120 * (1 - timeLeft / (duration * 60))}
                     className="text-orange-400 transition-all duration-1000 ease-linear"
                     />
                 </svg>
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
-                    <span className="text-4xl font-mono text-stone-700 font-bold">{formatTime(timeLeft)}</span>
+                    <span className="text-5xl font-mono text-stone-700 font-bold">{formatTime(timeLeft)}</span>
                 </div>
             </div>
 
             {/* Instructions / Guidance Card */}
-            <div className="w-full bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-stone-200 shadow-sm mb-8 overflow-y-auto max-h-48">
+            <div className="w-full bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-stone-200 shadow-sm mb-8 overflow-y-auto max-h-60">
                  {loadingGuidance ? (
-                     <div className="flex justify-center p-2"><span className="text-stone-400 italic animate-pulse">Softening...</span></div>
+                     <div className="flex justify-center p-4"><span className="text-stone-400 italic animate-pulse">Preparing guidance...</span></div>
                  ) : (
                      <div className="text-center">
-                         {guidance && <p className={`text-stone-600 italic font-serif mb-4 ${language === 'si' ? 'font-sinhala' : ''}`}>"{guidance}"</p>}
+                         {guidance && <p className={`text-stone-600 italic font-serif text-lg mb-6 leading-relaxed ${language === 'si' ? 'font-sinhala' : ''}`}>"{guidance}"</p>}
                          
                          {/* Show chant instructions specifically for Metta or if needed */}
-                         <div className="space-y-2 mt-4 text-left border-t border-stone-100 pt-4">
+                         <div className="space-y-3 mt-4 text-left border-t border-stone-200 pt-4">
                              {getInstructions()?.map((inst, idx) => (
-                                 <p key={idx} className={`text-sm text-stone-700 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                                 <p key={idx} className={`text-sm text-stone-700 leading-relaxed ${language === 'si' ? 'font-sinhala' : ''}`}>
                                     {inst}
                                  </p>
                              ))}
@@ -267,11 +270,11 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
 
             {/* Controls */}
             <div className="flex items-center space-x-6 mb-8">
-                <button onClick={toggleTimer} className="w-16 h-16 bg-stone-200 rounded-full flex items-center justify-center text-stone-700 shadow-lg hover:bg-stone-300 transition-all">
-                    <Pause fill="currentColor" />
+                <button onClick={toggleTimer} className="w-20 h-20 bg-stone-800 rounded-full flex items-center justify-center text-white shadow-xl hover:bg-stone-700 transition-all hover:scale-105 active:scale-95">
+                    <Pause fill="currentColor" size={32} />
                 </button>
-                <button onClick={stopTimer} className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 hover:bg-red-200 transition-all">
-                    <Square size={16} fill="currentColor" />
+                <button onClick={stopTimer} className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center text-red-600 hover:bg-red-200 transition-all">
+                    <Square size={20} fill="currentColor" />
                 </button>
             </div>
          </div>
@@ -281,9 +284,9 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
       {!isActive && (
         <button 
             onClick={handleStart}
-            className="mt-8 px-12 py-4 bg-orange-600 text-white rounded-full font-bold text-lg shadow-xl hover:bg-orange-700 transition-transform transform hover:scale-105 flex items-center gap-2"
+            className="mt-6 px-16 py-4 bg-orange-600 text-white rounded-full font-bold text-xl shadow-xl hover:bg-orange-700 transition-transform transform hover:scale-105 flex items-center gap-3"
         >
-            <Play fill="currentColor" size={20} />
+            <Play fill="currentColor" size={24} />
             {t.startSession}
         </button>
       )}
@@ -316,19 +319,21 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
                             <button 
                                 onClick={submitReflection}
                                 disabled={loadingFeedback}
-                                className="w-full bg-orange-600 text-white py-3 rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50"
+                                className="w-full bg-orange-600 text-white py-3 rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 font-medium"
                             >
-                                {loadingFeedback ? 'Processing...' : 'Reflect'}
+                                {loadingFeedback ? 'Processing...' : 'Reflect & Complete'}
                             </button>
-                            <button onClick={closeFeedback} className="w-full mt-2 text-stone-500 py-2">Skip</button>
+                            <button onClick={closeFeedback} className="w-full mt-2 text-stone-500 py-2 hover:text-stone-700">Skip Reflection</button>
                           </>
                       ) : (
-                          <div className="bg-orange-50 p-6 rounded-xl border border-orange-100">
-                              <Star className="text-orange-400 mb-2" size={24} />
-                              <p className={`text-stone-800 font-serif italic mb-6 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                          <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 text-center">
+                              <div className="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Star fill="currentColor" size={24} />
+                              </div>
+                              <p className={`text-stone-800 font-serif italic mb-6 leading-relaxed ${language === 'si' ? 'font-sinhala' : ''}`}>
                                   "{aiResponse}"
                               </p>
-                              <button onClick={closeFeedback} className="w-full bg-stone-800 text-white py-3 rounded-xl hover:bg-stone-900">
+                              <button onClick={closeFeedback} className="w-full bg-stone-800 text-white py-3 rounded-xl hover:bg-stone-900 font-medium">
                                   Close
                               </button>
                           </div>

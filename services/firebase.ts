@@ -4,47 +4,49 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { UserPreferences } from "../types";
 
-// Security: Load config from environment variables
-// Ensure these are set in your Vercel project settings
-const getEnvVar = (key: string) => {
-  // @ts-ignore
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-    // @ts-ignore
-    return import.meta.env[key];
-  }
-  // @ts-ignore
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    // @ts-ignore
-    return process.env[key];
-  }
-  return '';
-};
+// Static replacement works best with direct property access.
+// We use a safe fallback that works across Vite (dev) and Vercel (prod).
+const env = (import.meta as any).env || {};
+const proc = (typeof process !== 'undefined' ? process.env : {}) as any;
 
 const firebaseConfig = {
-  apiKey: getEnvVar('VITE_FIREBASE_API_KEY'),
-  authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN'),
-  projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID'),
-  storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET'),
-  messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-  appId: getEnvVar('VITE_FIREBASE_APP_ID'),
-  measurementId: getEnvVar('VITE_FIREBASE_MEASUREMENT_ID')
+  apiKey: env.VITE_FIREBASE_API_KEY || proc.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || proc.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: env.VITE_FIREBASE_PROJECT_ID || proc.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || proc.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || proc.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.VITE_FIREBASE_APP_ID || proc.VITE_FIREBASE_APP_ID,
+  measurementId: env.VITE_FIREBASE_MEASUREMENT_ID || proc.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Validate config
-const isConfigValid = Object.values(firebaseConfig).every(v => v !== '');
+// Diagnostic Check
+const missingKeys = Object.entries(firebaseConfig)
+  .filter(([key, value]) => !value && key !== 'measurementId')
+  .map(([key]) => `VITE_FIREBASE_${key.toUpperCase().replace(/[A-Z]/g, letter => `_${letter}`)}`);
 
-if (!isConfigValid) {
-  console.warn("Firebase config missing. Please set VITE_FIREBASE_... environment variables.");
+if (missingKeys.length > 0) {
+  console.warn(
+    `Firebase config incomplete. Missing: ${missingKeys.join(', ')}. ` +
+    `Check your .env file locally or Vercel Environment Variables in production.`
+  );
 }
 
-// Initialize Firebase only if config is valid to prevent crashes
-const app = initializeApp(firebaseConfig);
+const isConfigValid = !!firebaseConfig.apiKey;
+
+// Initialize Firebase with fallback to prevent crash
+const app = initializeApp(isConfigValid ? firebaseConfig : { 
+    apiKey: "AIzaSy_DUMMY_KEY_PREVENTS_CRASH", 
+    authDomain: "dummy.firebaseapp.com",
+    projectId: "dummy-project",
+    appId: "1:123456789:web:dummy"
+});
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
-  if (!isConfigValid) throw new Error("Firebase configuration missing.");
+  if (!isConfigValid) throw new Error("Firebase configuration missing. Cannot sign in with Google.");
   try {
     await signInWithPopup(auth, googleProvider);
   } catch (error) {
@@ -53,19 +55,16 @@ export const signInWithGoogle = async () => {
   }
 };
 
-// Helper to separate guest data from auth user fallback data
 const getStorageKey = (uid: string) => `bodhi_user_${uid}`;
 
 export const saveUserProfile = async (uid: string, data: UserPreferences) => {
     if (!isConfigValid) {
-        // Fallback for missing config (Guest mode mostly)
         localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
         return;
     }
     try {
         await setDoc(doc(db, "users", uid), data, { merge: true });
     } catch (error: any) {
-        // Fallback to localStorage if permission denied or unavailable
         if (error.code === 'permission-denied' || error.code === 'unavailable') {
             localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
         } else {
@@ -90,9 +89,7 @@ export const getUserProfile = async (uid: string): Promise<UserPreferences | nul
     } catch (error: any) {
         if (error.code === 'permission-denied' || error.code === 'unavailable') {
              const localData = localStorage.getItem(getStorageKey(uid));
-             if (localData) {
-                 return JSON.parse(localData);
-             }
+             if (localData) return JSON.parse(localData);
              return null;
         }
         console.error("Error fetching user profile", error);

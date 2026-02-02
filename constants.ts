@@ -63,14 +63,14 @@ export const UI_TEXT = {
     askBtn: "Ask",
     lessonQnA: "Lesson Q&A",
 
-    // Calendar
-    buddhistCalendar: "Buddhist Calendar",
-
     // Sutta Explorer
     suttaSearchPlaceholder: "Search for a Sutta or topic (e.g., 'Metta', 'Anger')...",
     suttaExplorerTitle: "Tipitaka Navigator",
     suttaExplorerSubtitle: "Explore the Pali Canon with AI guidance.",
     suggestedSuttas: "Suggested Readings",
+
+    // Calendar
+    buddhistCalendar: "Buddhist Calendar 2025",
   },
   si: {
     welcome: "බෝධි මාර්ගයට සාදරයෙන් පිළිගනිමු",
@@ -131,14 +131,14 @@ export const UI_TEXT = {
     askBtn: "අසන්න",
     lessonQnA: "පාඩම ගැන ගැටළු",
 
-    // Calendar
-    buddhistCalendar: "බෞද්ධ දින දර්ශනය",
-
     // Sutta Explorer
     suttaSearchPlaceholder: "සූත්‍රයක් හෝ මාතෘකාවක් සොයන්න (උදා: 'මෛත්‍රිය', 'කෝපය')...",
     suttaExplorerTitle: "ත්‍රිපිටක නාවිකයා",
     suttaExplorerSubtitle: "ත්‍රිපිටකය තුළ AI සහායෙන් ගවේෂණය කරන්න.",
     suggestedSuttas: "යෝජිත සූත්‍ර",
+
+    // Calendar
+    buddhistCalendar: "බෞද්ධ දින දර්ශනය 2025",
   }
 };
 
@@ -285,16 +285,16 @@ export const CORE_LESSONS: Lesson[] = [
 ];
 
 export const POYA_DAYS_2025 = [
-  { date: "2025-01-13", name: "Duruthu Full Moon Poya", si: "දුරුතු පුර පසළොස්වක පොහොය" },
-  { date: "2025-02-12", name: "Navam Full Moon Poya", si: "නවම් පුර පසළොස්වක පොහොය" },
-  { date: "2025-03-13", name: "Medin Full Moon Poya", si: "මැදින් පුර පසළොස්වක පොහොය" },
-  { date: "2025-04-12", name: "Bak Full Moon Poya", si: "බක් පුර පසළොස්වක පොහොය" },
-  { date: "2025-05-12", name: "Vesak Full Moon Poya", si: "වෙසක් පුර පසළොස්වක පොහොය" },
-  { date: "2025-06-11", name: "Poson Full Moon Poya", si: "පොසොන් පුර පසළොස්වක පොහොය" },
-  { date: "2025-07-10", name: "Esala Full Moon Poya", si: "ඇසළ පුර පසළොස්වක පොහොය" },
-  { date: "2025-08-09", name: "Nikini Full Moon Poya", si: "නිකිණි පුර පසළොස්වක පොහොය" },
-  { date: "2025-09-07", name: "Binara Full Moon Poya", si: "බිනර පුර පසළොස්වක පොහොය" },
-  { date: "2025-10-06", name: "Vap Full Moon Poya", si: "වප් පුර පසළොස්වක පොහොය" },
-  { date: "2025-11-05", name: "Il Full Moon Poya", si: "ඉල් පුර පසළොස්වක පොහොය" },
-  { date: "2025-12-04", name: "Unduvap Full Moon Poya", si: "උඳුවප් පුර පසළොස්වක පොහොය" }
+  { date: '2025-01-13', name: 'Duruthu Poya', si: 'දුරුතු පොහොය' },
+  { date: '2025-02-12', name: 'Navam Poya', si: 'නවම් පොහොය' },
+  { date: '2025-03-13', name: 'Medin Poya', si: 'මැදින් පොහොය' },
+  { date: '2025-04-12', name: 'Bak Poya', si: 'බක් පොහොය' },
+  { date: '2025-05-12', name: 'Vesak Poya', si: 'වෙසක් පොහොය' },
+  { date: '2025-06-10', name: 'Poson Poya', si: 'පොසොන් පොහොය' },
+  { date: '2025-07-10', name: 'Esala Poya', si: 'ඇසළ පොහොය' },
+  { date: '2025-08-08', name: 'Nikini Poya', si: 'නිකිණි පොහොය' },
+  { date: '2025-09-07', name: 'Binara Poya', si: 'බිනර පොහොය' },
+  { date: '2025-10-06', name: 'Vap Poya', si: 'වප් පොහොය' },
+  { date: '2025-11-05', name: 'Il Poya', si: 'ඉල් පොහොය' },
+  { date: '2025-12-04', name: 'Unduvap Poya', si: 'උඳුවප් පොහොය' }
 ];

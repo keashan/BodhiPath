@@ -1,28 +1,18 @@
 
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 import { Language, DailyDrop } from "../types";
 
-// Security: Safely access API key from environment variables only.
-const getApiKey = () => {
-  // Check Vite environment variables (Standard for React on Vercel)
-  // @ts-ignore
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
-    // @ts-ignore
-    return import.meta.env.VITE_API_KEY;
-  }
-  
-  // Check standard process.env (Node/Next.js/Polyfills)
-  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-    return process.env.API_KEY;
-  }
+// Direct access for reliable replacement by build tools
+const env = (import.meta as any).env || {};
+const proc = (typeof process !== 'undefined' ? process.env : {}) as any;
 
-  console.error("Gemini API Key is missing. Please add VITE_API_KEY to your environment variables.");
-  return '';
-};
+// Priority: process.env.API_KEY (Vercel) -> import.meta.env.VITE_API_KEY (Vite Local) -> process.env.VITE_API_KEY
+const apiKey = proc.API_KEY || env.VITE_API_KEY || proc.VITE_API_KEY || "";
 
-const apiKey = getApiKey();
+if (!apiKey) {
+  console.warn("Gemini API Key is missing. Ensure VITE_API_KEY (local) or API_KEY (Vercel) is set.");
+}
 
-// Initialize AI only if key exists to avoid immediate crash, though calls will fail
 const ai = new GoogleGenAI({ apiKey: apiKey || 'MISSING_KEY' });
 
 export const createChatSession = (language: Language, userGoals: string[], isDebateMode: boolean = false): Chat => {
@@ -103,11 +93,11 @@ export const generateDailyDharma = async (language: Language): Promise<DailyDrop
       config: {
         responseMimeType: "application/json",
         responseSchema: {
-            type: "OBJECT",
+            type: Type.OBJECT,
             properties: {
-                quote: { type: "STRING" },
-                source: { type: "STRING" },
-                reflection: { type: "STRING" }
+                quote: { type: Type.STRING },
+                source: { type: Type.STRING },
+                reflection: { type: Type.STRING }
             },
             required: ["quote", "source", "reflection"]
         }
