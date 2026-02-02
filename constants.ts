@@ -3,6 +3,85 @@ import { Language, Lesson } from './types';
 
 export const APP_NAME = "BodhiPath";
 
+export const LEGAL_CONTENT = {
+  en: {
+    terms: {
+      title: "Terms & Conditions",
+      lastUpdated: "June 2025",
+      sections: [
+        {
+          heading: "1. Nature of the Service",
+          content: "BodhiPath is an educational and spiritual companion app. The guidance provided by the AI Monk (Bhante Bodhi) is generated using artificial intelligence based on Theravāda Buddhist texts and should not be considered as professional medical, psychological, or legal advice."
+        },
+        {
+          heading: "2. Personal Responsibility",
+          content: "Users are responsible for their own practice and mental well-being. Please approach the teachings with mindfulness and critical thinking (Kalama Sutta principle)."
+        },
+        {
+          heading: "3. Usage Conduct",
+          content: "Users agree to interact with the AI guide and the community (if applicable) with respect and right speech."
+        }
+      ]
+    },
+    privacy: {
+      title: "Privacy Policy",
+      lastUpdated: "June 2025",
+      sections: [
+        {
+          heading: "1. Data We Collect",
+          content: "We collect your email (if you sign in), your spiritual goals, and app preferences to personalize your journey."
+        },
+        {
+          heading: "2. How We Use Data",
+          content: "Your data is used solely to provide personalized Dhamma guidance and daily reflections. We do not sell or share your personal data with third parties for marketing purposes."
+        },
+        {
+          heading: "3. AI Processing",
+          content: "Your chat interactions are processed by Google Gemini API to generate responses. We advise not sharing sensitive personal identifiers in the chat."
+        }
+      ]
+    }
+  },
+  si: {
+    terms: {
+      title: "ව්‍යවස්ථා සහ කොන්දේසි",
+      lastUpdated: "2025 ජුනි",
+      sections: [
+        {
+          heading: "1. සේවාවේ ස්වභාවය",
+          content: "බෝධි මාර්ගය යනු අධ්‍යාපනික සහ අධ්‍යාත්මික සහකාර යෙදුමකි. AI හිමිනම (භන්තේ බෝධි) විසින් ලබා දෙන උපදෙස් ථේරවාද බෞද්ධ ග්‍රන්ථ මත පදනම්ව කෘතිම බුද්ධිය (AI) මගින් උත්පාදනය කරන ලද ඒවා වන අතර, ඒවා වෘත්තීය වෛද්‍ය, මනෝවිද්‍යාත්මක හෝ නීතිමය උපදෙස් ලෙස නොසැලකිය යුතුය."
+        },
+        {
+          heading: "2. පෞද්ගලික වගකීම",
+          content: "පරිශීලකයන් තමන්ගේම පුහුණුව සහ මානසික යහපැවැත්ම පිළිබඳව වගකිව යුතුය. කරුණාකර සිහියෙන් යුතුව මෙම දේශනා පරිශීලනය කරන්න (කාලාම සූත්‍ර ප්‍රතිපත්තිය)."
+        },
+        {
+          heading: "3. භාවිතය",
+          content: "AI මඟ පෙන්වන්නා සහ ප්‍රජාව සමඟ ගෞරවාන්විතව සහ සම්මා වාචාවෙන් යුතුව අදහස් හුවමාරු කර ගැනීමට පරිශීලකයන් එකඟ වේ."
+        }
+      ]
+    },
+    privacy: {
+      title: "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+      lastUpdated: "2025 ජුනි",
+      sections: [
+        {
+          heading: "1. අප රැස් කරන දත්ත",
+          content: "ඔබේ ගමන පෞද්ගලීකරණය කිරීම සඳහා අපි ඔබේ විද්‍යුත් තැපෑල (ඔබ ඇතුළු වූයේ නම්), ඔබේ අධ්‍යාත්මික අරමුණු සහ යෙදුම් මනාපයන් රැස් කරන්නෙමු."
+        },
+        {
+          heading: "2. අපි දත්ත භාවිතා කරන ආකාරය",
+          content: "ඔබේ දත්ත භාවිතා කරනු ලබන්නේ පුද්ගලීකරණය කළ ධර්ම උපදෙස් සහ දෛනික පරාවර්තනයන් සැපයීම සඳහා පමණි. අපි ඔබේ පුද්ගලික දත්ත අලෙවිකරණ අරමුණු සඳහා තෙවන පාර්ශවයන් සමඟ විකුණන්නේ හෝ බෙදා නොගන්නෙමු."
+        },
+        {
+          heading: "3. AI සැකසීම",
+          content: "ඔබේ චැට් අන්තර්ක්‍රියා සඳහා පිළිතුරු ලබා ගැනීමට Google Gemini API භාවිතා කරනු ලැබේ. චැට් එක තුළ සංවේදී පුද්ගලික තොරතුරු බෙදා නොගන්නා ලෙස අපි උපදෙස් දෙමු."
+        }
+      ]
+    }
+  }
+};
+
 export const UI_TEXT = {
   en: {
     welcome: "Welcome to BodhiPath",
@@ -33,7 +112,13 @@ export const UI_TEXT = {
     journal: "Journal",
     temple: "Temple Finder",
     classroom: "Classroom",
+    dailyDrops: "Daily Wisdom",
     
+    // Legal
+    terms: "Terms of Service",
+    privacy: "Privacy Policy",
+    back: "Back",
+
     // Data Management
     resetJourney: "Reset Journey",
     resetConfirm: "Are you sure you want to reset your journey?",
@@ -71,6 +156,18 @@ export const UI_TEXT = {
 
     // Calendar
     buddhistCalendar: "Buddhist Calendar 2025",
+
+    // Invite
+    spreadDhamma: "Spread the Dhamma",
+    inviteFriends: "Invite Friends",
+    shareMessage: "Join me on BodhiPath to learn the Buddha's teachings with AI guidance.",
+    linkCopied: "Link copied to clipboard!",
+
+    // Daily Drops View
+    wisdomGallery: "Wisdom Gallery",
+    previousDrops: "Previous Reflections",
+    noHistory: "Your history of wisdom begins today.",
+    todayInspiration: "Today's Inspiration"
   },
   si: {
     welcome: "බෝධි මාර්ගයට සාදරයෙන් පිළිගනිමු",
@@ -101,6 +198,12 @@ export const UI_TEXT = {
     journal: "සටහන්",
     temple: "විහාර සොයන්න",
     classroom: "පන්ති",
+    dailyDrops: "දෛනික ධර්ම",
+
+    // Legal
+    terms: "සේවා කොන්දේසි",
+    privacy: "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+    back: "ආපසු",
 
     // Data Management
     resetJourney: "නැවත අරඹන්න",
@@ -139,6 +242,18 @@ export const UI_TEXT = {
 
     // Calendar
     buddhistCalendar: "බෞද්ධ දින දර්ශනය 2025",
+
+    // Invite
+    spreadDhamma: "ධර්මය පතුරුවන්න",
+    inviteFriends: "යහළුවන්ට ආරාධනා කරන්න",
+    shareMessage: "AI මග පෙන්වීම සමඟ බුද්ධ ධර්මය ඉගෙන ගැනීමට මා සමඟ බෝධි මාර්ගයට එක්වන්න.",
+    linkCopied: "සබැඳිය පිටපත් කරන ලදී!",
+
+    // Daily Drops View
+    wisdomGallery: "ධර්ම එකතුව",
+    previousDrops: "පෙර පණිවිඩ",
+    noHistory: "ඔබේ ධර්ම එකතුව අදින් ආරම්භ වේ.",
+    todayInspiration: "අද දින පණිවිඩය"
   }
 };
 
@@ -258,28 +373,68 @@ export const MEDITATION_TYPES = [
 ];
 
 export const CORE_LESSONS: Lesson[] = [
+  // Foundations
   {
     id: 'l1',
-    title: { en: "The Four Noble Truths", si: "චතුරාර්ය සත්‍යය" },
-    description: { en: "Understanding suffering and its cessation.", si: "දුක සහ දුක නැති කිරීම පිළිබඳ අවබෝධය." },
+    title: { en: "1. The Triple Gem (Tisarana)", si: "1. තෙරුවන් (තිසරණ)" },
+    description: { en: "Taking refuge in the Buddha, Dhamma, and Sangha.", si: "බුද්ධ, ධම්ම, සංඝ යන තෙරුවන් සරණ යාම." },
     completed: false
   },
   {
     id: 'l2',
-    title: { en: "The Noble Eightfold Path", si: "ආර්ය අෂ්ටාංගික මාර්ගය" },
-    description: { en: "The guide for daily practice.", si: "දෛනික ජීවිතයට මග පෙන්වීම." },
+    title: { en: "2. The Five Precepts (Pancha Sila)", si: "2. පංච සීලය" },
+    description: { en: "The ethical foundation of Buddhist life.", si: "බෞද්ධ ජීවිතයේ සදාචාරාත්මක පදනම." },
     completed: false
   },
   {
     id: 'l3',
-    title: { en: "Dependent Origination", si: "පටිච්චසමුප්පාදය" },
-    description: { en: "The chain of cause and effect.", si: "හේතු ඵල දහම." },
+    title: { en: "3. Dana (Generosity)", si: "3. දානය (ත්‍යාගශීලී බව)" },
+    description: { en: "The practice of giving and letting go.", si: "දීම සහ අත්හැරීම පුරුදු කිරීම." },
+    completed: false
+  },
+  // Core Wisdom
+  {
+    id: 'l4',
+    title: { en: "4. The Four Noble Truths", si: "4. චතුරාර්ය සත්‍යය" },
+    description: { en: "The essence of the Buddha's teaching on suffering.", si: "දුක පිළිබඳ බුදුන් වහන්සේගේ දේශනාවේ සාරය." },
     completed: false
   },
   {
-    id: 'l4',
-    title: { en: "The Three Marks of Existence", si: "ත්‍රිලක්ෂණය" },
-    description: { en: "Anicca, Dukkha, Anatta.", si: "අනිත්‍ය, දුක්ඛ, අනාත්ම." },
+    id: 'l5',
+    title: { en: "5. The Noble Eightfold Path", si: "5. ආර්ය අෂ්ටාංගික මාර්ගය" },
+    description: { en: "The path leading to the cessation of suffering.", si: "දුක නැති කිරීමේ මාර්ගය." },
+    completed: false
+  },
+  {
+    id: 'l6',
+    title: { en: "6. The Three Marks of Existence", si: "6. ත්‍රිලක්ෂණය" },
+    description: { en: "Impermanence, Suffering, and Non-self.", si: "අනිත්‍ය, දුක්ඛ, අනාත්ම." },
+    completed: false
+  },
+  // Deeper Reality
+  {
+    id: 'l7',
+    title: { en: "7. Kamma & Rebirth", si: "7. කර්මය සහ පුනර්භවය" },
+    description: { en: "Action, result, and the cycle of existence.", si: "ක්‍රියාව, විපාකය සහ සසර චක්‍රය." },
+    completed: false
+  },
+  {
+    id: 'l8',
+    title: { en: "8. Dependent Origination", si: "8. පටිච්චසමුප්පාදය" },
+    description: { en: "How suffering arises through causes and conditions.", si: "හේතු ප්‍රත්‍යයන් හරහා දුක හටගන්නා ආකාරය." },
+    completed: false
+  },
+  // Practice
+  {
+    id: 'l9',
+    title: { en: "9. The Four Foundations of Mindfulness", si: "9. සතර සතිපට්ඨානය" },
+    description: { en: "Mindfulness of body, feelings, mind, and dhammas.", si: "කය, වේදනාව, සිත සහ ධර්මයන් පිළිබඳ සිහිය." },
+    completed: false
+  },
+  {
+    id: 'l10',
+    title: { en: "10. The Four Sublime States", si: "10. සතර බ්‍රහ්ම විහරණ" },
+    description: { en: "Metta, Karuna, Mudita, Upekkha.", si: "මෛත්‍රී, කරුණා, මුදිතා, උපේක්ෂා." },
     completed: false
   }
 ];

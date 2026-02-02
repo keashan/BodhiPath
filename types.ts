@@ -9,14 +9,18 @@ export enum AppView {
   JOURNAL = 'JOURNAL',
   SUTTA = 'SUTTA',
   TEMPLE = 'TEMPLE',
-  CLASSROOM = 'CLASSROOM'
+  CLASSROOM = 'CLASSROOM',
+  DAILY_DROPS = 'DAILY_DROPS'
 }
+
+export type AppPage = 'APP' | 'TERMS' | 'PRIVACY';
 
 export interface UserPreferences {
   hasCompletedOnboarding: boolean;
   language: Language;
   goals: string[];
   receiveDailyDrops: boolean;
+  isGuided: boolean;
   name?: string;
 }
 
@@ -39,6 +43,7 @@ export interface DailyDrop {
   quote: string;
   source: string;
   reflection: string;
+  timestamp: number;
 }
 
 export interface Lesson {

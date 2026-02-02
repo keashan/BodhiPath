@@ -5,12 +5,14 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 import { auth, signInWithGoogle } from '../services/firebase';
 import { Loader2, Mail, Lock, LogIn, User, AlertCircle } from 'lucide-react';
 import Logo from './Logo';
+import { AppPage } from '../types';
 
 interface AuthProps {
   onGuestLogin: () => void;
+  onNavigate: (page: AppPage) => void;
 }
 
-const Auth: React.FC<AuthProps> = ({ onGuestLogin }) => {
+const Auth: React.FC<AuthProps> = ({ onGuestLogin, onNavigate }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -165,6 +167,11 @@ const Auth: React.FC<AuthProps> = ({ onGuestLogin }) => {
             >
                 {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
             </button>
+        </div>
+
+        <div className="mt-8 pt-4 border-t border-stone-100 flex justify-center space-x-6 text-xs text-stone-400">
+             <button onClick={() => onNavigate('TERMS')} className="hover:text-stone-600 transition-colors">Terms of Service</button>
+             <button onClick={() => onNavigate('PRIVACY')} className="hover:text-stone-600 transition-colors">Privacy Policy</button>
         </div>
 
       </motion.div>

@@ -6,13 +6,15 @@ import { Loader2 } from 'lucide-react';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import Auth from './components/Auth';
-import { UserPreferences } from './types';
+import LegalView from './components/LegalView';
+import { UserPreferences, AppPage } from './types';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
+  const [currentPage, setCurrentPage] = useState<AppPage>('APP');
 
   useEffect(() => {
     // Listen for authentication state changes
@@ -85,6 +87,11 @@ function App() {
     }
   };
 
+  const handleNavigate = (page: AppPage) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
+
   if (loading) {
     return (
         <div className="h-screen w-full flex items-center justify-center bg-stone-50 text-orange-600">
@@ -93,8 +100,17 @@ function App() {
     );
   }
 
+  // Legal Pages (accessible regardless of auth state)
+  if (currentPage === 'TERMS') {
+    return <div className="min-h-screen bg-stone-50"><LegalView type="terms" language={preferences?.language || 'en'} onBack={() => handleNavigate('APP')} /></div>;
+  }
+  if (currentPage === 'PRIVACY') {
+    return <div className="min-h-screen bg-stone-50"><LegalView type="privacy" language={preferences?.language || 'en'} onBack={() => handleNavigate('APP')} /></div>;
+  }
+
+  // App Pages
   if (!user && !isGuest) {
-    return <Auth onGuestLogin={handleGuestLogin} />;
+    return <Auth onGuestLogin={handleGuestLogin} onNavigate={handleNavigate} />;
   }
 
   return (
@@ -102,7 +118,12 @@ function App() {
       {!preferences ? (
         <Onboarding onComplete={handleOnboardingComplete} />
       ) : (
-        <Dashboard preferences={preferences} onLogout={handleLogout} onUpdatePreferences={handleUpdatePreferences} />
+        <Dashboard 
+          preferences={preferences} 
+          onLogout={handleLogout} 
+          onUpdatePreferences={handleUpdatePreferences} 
+          onNavigate={handleNavigate}
+        />
       )}
     </div>
   );

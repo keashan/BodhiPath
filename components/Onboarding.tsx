@@ -15,6 +15,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [language, setLanguage] = useState<Language>('en');
   const [goals, setGoals] = useState<string[]>([]);
   const [receiveDailyDrops, setReceiveDailyDrops] = useState(true);
+  const [isGuided, setIsGuided] = useState(false);
 
   const t = UI_TEXT[language];
   const goalOpts = GOAL_OPTIONS[language];
@@ -33,6 +34,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       language,
       goals,
       receiveDailyDrops,
+      isGuided,
     });
   };
 
@@ -85,7 +87,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </motion.div>
           )}
 
-          {/* Step 2: Language (Redundant but keeps flow explicitly confirmed) */}
+          {/* Step 2: Language */}
           {step === 2 && (
             <motion.div
                key="step2"
@@ -169,10 +171,16 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   {t.personalizeTitle}
                 </h2>
                 <div className="space-y-4 mb-8">
-                   <button onClick={handleNext} className="w-full p-4 bg-orange-100 text-orange-900 rounded-xl font-medium hover:bg-orange-200 transition-colors">
+                   <button 
+                      onClick={() => { setIsGuided(true); handleNext(); }} 
+                      className="w-full p-4 bg-orange-100 text-orange-900 rounded-xl font-medium hover:bg-orange-200 transition-colors"
+                   >
                      {language === 'si' ? 'ඔව්, මග පෙන්වන්න' : 'Yes, guide me'}
                    </button>
-                   <button onClick={handleNext} className="w-full p-4 bg-stone-100 text-stone-600 rounded-xl font-medium hover:bg-stone-200 transition-colors">
+                   <button 
+                      onClick={() => { setIsGuided(false); handleNext(); }} 
+                      className="w-full p-4 bg-stone-100 text-stone-600 rounded-xl font-medium hover:bg-stone-200 transition-colors"
+                   >
                      {language === 'si' ? 'නැහැ, මමම සොයන්නම්' : 'No, I’ll explore freely'}
                    </button>
                 </div>
