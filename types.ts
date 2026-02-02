@@ -9,7 +9,10 @@ export enum AppView {
   JOURNAL = 'JOURNAL',
   SUTTA = 'SUTTA',
   TEMPLE = 'TEMPLE',
-  CLASSROOM = 'CLASSROOM'
+  CLASSROOM = 'CLASSROOM',
+  TERMS = 'TERMS',
+  PRIVACY = 'PRIVACY',
+  DAILY_DROPS = 'DAILY_DROPS'
 }
 
 export interface UserPreferences {
@@ -17,6 +20,7 @@ export interface UserPreferences {
   language: Language;
   goals: string[];
   receiveDailyDrops: boolean;
+  isGuided: boolean;
   name?: string;
 }
 
@@ -39,6 +43,7 @@ export interface DailyDrop {
   quote: string;
   source: string;
   reflection: string;
+  timestamp: number;
 }
 
 export interface Lesson {

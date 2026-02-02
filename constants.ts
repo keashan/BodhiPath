@@ -3,6 +3,85 @@ import { Language, Lesson } from './types';
 
 export const APP_NAME = "BodhiPath";
 
+export const LEGAL_CONTENT = {
+  en: {
+    terms: {
+      title: "Terms & Conditions",
+      lastUpdated: "June 2025",
+      sections: [
+        {
+          heading: "1. Nature of the Service",
+          content: "BodhiPath is an educational and spiritual companion app. The guidance provided by the AI Monk (Bhante Bodhi) is generated using artificial intelligence based on Theravāda Buddhist texts and should not be considered as professional medical, psychological, or legal advice."
+        },
+        {
+          heading: "2. Personal Responsibility",
+          content: "Users are responsible for their own practice and mental well-being. Please approach the teachings with mindfulness and critical thinking (Kalama Sutta principle)."
+        },
+        {
+          heading: "3. Usage Conduct",
+          content: "Users agree to interact with the AI guide and the community (if applicable) with respect and right speech."
+        }
+      ]
+    },
+    privacy: {
+      title: "Privacy Policy",
+      lastUpdated: "June 2025",
+      sections: [
+        {
+          heading: "1. Data We Collect",
+          content: "We collect your email (if you sign in), your spiritual goals, and app preferences to personalize your journey."
+        },
+        {
+          heading: "2. How We Use Data",
+          content: "Your data is used solely to provide personalized Dhamma guidance and daily reflections. We do not sell or share your personal data with third parties for marketing purposes."
+        },
+        {
+          heading: "3. AI Processing",
+          content: "Your chat interactions are processed by Google Gemini API to generate responses. We advise not sharing sensitive personal identifiers in the chat."
+        }
+      ]
+    }
+  },
+  si: {
+    terms: {
+      title: "ව්‍යවස්ථා සහ කොන්දේසි",
+      lastUpdated: "2025 ජුනි",
+      sections: [
+        {
+          heading: "1. සේවාවේ ස්වභාවය",
+          content: "බෝධි මාර්ගය යනු අධ්‍යාපනික සහ අධ්‍යාත්මික සහකාර යෙදුමකි. AI හිමිනම (භන්තේ බෝධි) විසින් ලබා දෙන උපදෙස් ථේරවාද බෞද්ධ ග්‍රන්ථ මත පදනම්ව කෘතිම බුද්ධිය (AI) මගින් උත්පාදනය කරන ලද ඒවා වන අතර, ඒවා වෘත්තීය වෛද්‍ය, මනෝවිද්‍යාත්මක හෝ නීතිමය උපදෙස් ලෙස නොසැලකිය යුතුය."
+        },
+        {
+          heading: "2. පෞද්ගලික වගකීම",
+          content: "පරිශීලකයන් තමන්ගේම පුහුණුව සහ මානසික යහපැවැත්ම පිළිබඳව වගකිව යුතුය. කරුණාකර සිහියෙන් යුතුව මෙම දේශනා පරිශීලනය කරන්න (කාලාම සූත්‍ර ප්‍රතිපත්තිය)."
+        },
+        {
+          heading: "3. භාවිතය",
+          content: "AI මඟ පෙන්වන්නා සහ ප්‍රජාව සමඟ ගෞරවාන්විතව සහ සම්මා වාචාවෙන් යුතුව අදහස් හුවමාරු කර ගැනීමට පරිශීලකයන් එකඟ වේ."
+        }
+      ]
+    },
+    privacy: {
+      title: "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+      lastUpdated: "2025 ජුනි",
+      sections: [
+        {
+          heading: "1. අප රැස් කරන දත්ත",
+          content: "ඔබේ ගමන පෞද්ගලීකරණය කිරීම සඳහා අපි ඔබේ විද්‍යුත් තැපෑල (ඔබ ඇතුළු වූයේ නම්), ඔබේ අධ්‍යාත්මික අරමුණු සහ යෙදුම් මනාපයන් රැස් කරන්නෙමු."
+        },
+        {
+          heading: "2. අපි දත්ත භාවිතා කරන ආකාරය",
+          content: "ඔබේ දත්ත භාවිතා කරනු ලබන්නේ පුද්ගලීකරණය කළ ධර්ම උපදෙස් සහ දෛනික පරාවර්තනයන් සැපයීම සඳහා පමණි. අපි ඔබේ පුද්ගලික දත්ත අලෙවිකරණ අරමුණු සඳහා තෙවන පාර්ශවයන් සමඟ විකුණන්නේ හෝ බෙදා නොගන්නෙමු."
+        },
+        {
+          heading: "3. AI සැකසීම",
+          content: "ඔබේ චැට් අන්තර්ක්‍රියා සඳහා පිළිතුරු ලබා ගැනීමට Google Gemini API භාවිතා කරනු ලැබේ. චැට් එක තුළ සංවේදී පුද්ගලික තොරතුරු බෙදා නොගන්නා ලෙස අපි උපදෙස් දෙමු."
+        }
+      ]
+    }
+  }
+};
+
 export const UI_TEXT = {
   en: {
     welcome: "Welcome to BodhiPath",
@@ -33,7 +112,13 @@ export const UI_TEXT = {
     journal: "Journal",
     temple: "Temple Finder",
     classroom: "Classroom",
+    dailyDrops: "Daily Wisdom",
     
+    // Legal
+    terms: "Terms of Service",
+    privacy: "Privacy Policy",
+    back: "Back",
+
     // Data Management
     resetJourney: "Reset Journey",
     resetConfirm: "Are you sure you want to reset your journey?",
@@ -71,6 +156,18 @@ export const UI_TEXT = {
 
     // Calendar
     buddhistCalendar: "Buddhist Calendar 2025",
+
+    // Invite
+    spreadDhamma: "Spread the Dhamma",
+    inviteFriends: "Invite Friends",
+    shareMessage: "Join me on BodhiPath to learn the Buddha's teachings with AI guidance.",
+    linkCopied: "Link copied to clipboard!",
+
+    // Daily Drops View
+    wisdomGallery: "Wisdom Gallery",
+    previousDrops: "Previous Reflections",
+    noHistory: "Your history of wisdom begins today.",
+    todayInspiration: "Today's Inspiration"
   },
   si: {
     welcome: "බෝධි මාර්ගයට සාදරයෙන් පිළිගනිමු",
@@ -101,6 +198,12 @@ export const UI_TEXT = {
     journal: "සටහන්",
     temple: "විහාර සොයන්න",
     classroom: "පන්ති",
+    dailyDrops: "දෛනික ධර්ම",
+
+    // Legal
+    terms: "සේවා කොන්දේසි",
+    privacy: "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+    back: "ආපසු",
 
     // Data Management
     resetJourney: "නැවත අරඹන්න",
@@ -139,6 +242,18 @@ export const UI_TEXT = {
 
     // Calendar
     buddhistCalendar: "බෞද්ධ දින දර්ශනය 2025",
+
+    // Invite
+    spreadDhamma: "ධර්මය පතුරුවන්න",
+    inviteFriends: "යහළුවන්ට ආරාධනා කරන්න",
+    shareMessage: "AI මග පෙන්වීම සමඟ බුද්ධ ධර්මය ඉගෙන ගැනීමට මා සමඟ බෝධි මාර්ගයට එක්වන්න.",
+    linkCopied: "සබැඳිය පිටපත් කරන ලදී!",
+
+    // Daily Drops View
+    wisdomGallery: "ධර්ම එකතුව",
+    previousDrops: "පෙර පණිවිඩ",
+    noHistory: "ඔබේ ධර්ම එකතුව අදින් ආරම්භ වේ.",
+    todayInspiration: "අද දින පණිවිඩය"
   }
 };
 

@@ -8,19 +8,19 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({ className }) => {
   const [imageError, setImageError] = useState(false);
 
-  // Try to load the image from public folder first
+  // 1. Try to load the image file from public/logo.png
   if (!imageError) {
     return (
       <img 
-        src="/flower.png" 
-        alt="BodhiPath Flower" 
+        src="/logo.png" 
+        alt="BodhiPath Logo" 
         className={`object-contain ${className}`}
         onError={() => setImageError(true)} 
       />
     );
   }
 
-  // Fallback to the SVG Flower if the image file is missing/broken
+  // 2. Fallback: Code-generated 3D Flower (Matches your design exactly)
   return (
     <svg 
       viewBox="0 0 512 512" 
@@ -29,28 +29,62 @@ export const Logo: React.FC<LogoProps> = ({ className }) => {
       className={className}
     >
       <defs>
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        {/* Soft 3D Lighting for Petals (White/Lilac) */}
+        <radialGradient id="petal3D" cx="30%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="50%" stopColor="#f3e8ff" /> {/* Light Lilac tint */}
+          <stop offset="100%" stopColor="#d8b4fe" /> {/* Shadowy purple */}
+        </radialGradient>
+
+        {/* 3D Lighting for Center (Orange) */}
+        <radialGradient id="center3D" cx="35%" cy="35%" r="60%">
+          <stop offset="0%" stopColor="#fbbf24" /> {/* Bright Yellow-Orange */}
+          <stop offset="100%" stopColor="#ea580c" /> {/* Deep Orange Shadow */}
+        </radialGradient>
+
+        {/* Stem Gradient */}
+        <linearGradient id="stem3D" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#86efac" />
+          <stop offset="100%" stopColor="#22c55e" />
+        </linearGradient>
+
+        <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feOffset dx="2" dy="4" result="offsetBlur" />
+          <feComposite in="SourceGraphic" in2="offsetBlur" operator="over" />
         </filter>
       </defs>
+
       {/* Stem */}
-      <path d="M256 460V320" stroke="#4d7c0f" strokeWidth="12" strokeLinecap="round"/>
-      <path d="M256 400C256 400 220 390 200 360" stroke="#4d7c0f" strokeWidth="12" strokeLinecap="round"/>
-      <path d="M256 420C256 420 290 410 310 380" stroke="#4d7c0f" strokeWidth="12" strokeLinecap="round"/>
+      <rect x="246" y="300" width="20" height="160" rx="10" fill="url(#stem3D)" />
       
-      {/* Back Petals */}
-      <path d="M256 320C256 320 160 300 130 220C100 140 180 120 256 180C332 120 412 140 382 220C352 300 256 320 256 320Z" fill="#fed7aa" stroke="#fdba74" strokeWidth="4"/>
-      
-      {/* Main Petals */}
-      <path d="M256 320C256 320 190 280 170 200C150 120 220 80 256 140C292 80 362 120 342 200C322 280 256 320 256 320Z" fill="#fdba74" stroke="#fb923c" strokeWidth="4"/>
-      
-      {/* Center Petal */}
-      <path d="M256 320C256 320 220 250 220 180C220 110 256 60 256 60C256 60 292 110 292 180C292 250 256 320 256 320Z" fill="#fb923c" stroke="#f97316" strokeWidth="4"/>
-      
-      {/* Core */}
-      <circle cx="256" cy="190" r="24" fill="#fff7ed" filter="url(#glow)"/>
-      <circle cx="256" cy="190" r="12" fill="#ffedd5"/>
+      {/* Leaves (Rounded, balloon style) */}
+      <path d="M246 420 C200 420, 160 400, 160 380 C160 360, 200 390, 246 400" fill="#86efac" />
+      <path d="M266 420 C312 420, 352 400, 352 380 C352 360, 312 390, 266 400" fill="#86efac" />
+
+      {/* 5 Petals - Rotated to match the "Star" arrangement */}
+      <g filter="url(#dropShadow)">
+         {/* Top */}
+         <ellipse cx="256" cy="150" rx="75" ry="85" fill="url(#petal3D)" />
+         
+         {/* Top Right */}
+         <ellipse cx="345" cy="215" rx="80" ry="75" fill="url(#petal3D)" transform="rotate(20 345 215)" />
+         
+         {/* Bottom Right */}
+         <ellipse cx="330" cy="320" rx="75" ry="80" fill="url(#petal3D)" transform="rotate(-20 330 320)" />
+         
+         {/* Bottom Left */}
+         <ellipse cx="182" cy="320" rx="75" ry="80" fill="url(#petal3D)" transform="rotate(20 182 320)" />
+         
+         {/* Top Left */}
+         <ellipse cx="167" cy="215" rx="80" ry="75" fill="url(#petal3D)" transform="rotate(-20 167 215)" />
+         
+         {/* Center */}
+         <circle cx="256" cy="256" r="65" fill="url(#center3D)" />
+         
+         {/* Glossy Highlight on Center */}
+         <ellipse cx="236" cy="236" rx="20" ry="12" fill="white" opacity="0.4" transform="rotate(-45 236 236)" />
+      </g>
     </svg>
   );
 };

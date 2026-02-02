@@ -2,22 +2,34 @@
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 import { Language, DailyDrop } from "../types";
 
-// Direct access for reliable replacement by build tools
-const env = (import.meta as any).env || {};
-const proc = (typeof process !== 'undefined' ? process.env : {}) as any;
+// Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+// The API key must be obtained exclusively from the environment variable process.env.API_KEY.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-// Priority: process.env.API_KEY (Vercel) -> import.meta.env.VITE_API_KEY (Vite Local) -> process.env.VITE_API_KEY
-const apiKey = proc.API_KEY || env.VITE_API_KEY || proc.VITE_API_KEY || "";
+export const getPersonalizedGuidance = async (language: Language, goals: string[]): Promise<string> => {
+    const prompt = `
+      You are Bhante Bodhi, a Theravada Monk. 
+      The user has chosen the following goals for their Buddhist practice: ${goals.join(', ')}.
+      
+      Suggest ONE specific next step for them to take in this app. 
+      Refer to one of these sections: "Dhamma Classroom", "Meditation Hall", or "Sutta Explorer".
+      Keep the tone gentle, encouraging, and brief (under 30 words).
+      Language: ${language === 'si' ? 'Sinhala' : 'English'}.
+    `;
 
-if (!apiKey) {
-  console.warn("Gemini API Key is missing. Ensure VITE_API_KEY (local) or API_KEY (Vercel) is set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: apiKey || 'MISSING_KEY' });
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: prompt,
+        });
+        return response.text || "";
+    } catch (e) {
+        console.error("Guidance error", e);
+        return "";
+    }
+};
 
 export const createChatSession = (language: Language, userGoals: string[], isDebateMode: boolean = false): Chat => {
-  if (!apiKey) throw new Error("API Key missing");
-
   let systemInstruction = `
     You are Bhante Bodhi, a wise, compassionate, and gentle Theravāda Buddhist monk.
     Your goal is to guide the user on their spiritual path.
@@ -55,8 +67,6 @@ export const createChatSession = (language: Language, userGoals: string[], isDeb
 };
 
 export const createSuttaChatSession = (language: Language): Chat => {
-  if (!apiKey) throw new Error("API Key missing");
-
   const systemInstruction = `
     You are a specialized Sutta Navigator for the Pali Canon (Theravāda Tipitaka).
     Your goal is to help users find, explore, and understand specific suttas.
@@ -80,8 +90,6 @@ export const createSuttaChatSession = (language: Language): Chat => {
 };
 
 export const generateDailyDharma = async (language: Language): Promise<DailyDrop> => {
-  if (!apiKey) return getFallbackDailyDrop(language);
-
   try {
     const prompt = language === 'si' 
       ? "Provide a short, inspiring quote from the Theravāda Buddhist Pali Canon in Sinhala, followed by its source (Sutta name), and a very brief 1-sentence reflection for daily life." 
@@ -105,15 +113,23 @@ export const generateDailyDharma = async (language: Language): Promise<DailyDrop
     });
 
     const text = response.text;
-    if (!text) throw new Error("No content generated");
+    if (!text || !text.trim()) throw new Error("No content generated");
     
-    return JSON.parse(text) as DailyDrop;
+    // Combining AI response with a timestamp to satisfy DailyDrop interface
+    const parsed = JSON.parse(text);
+    return {
+      quote: parsed.quote,
+      source: parsed.source,
+      reflection: parsed.reflection,
+      timestamp: Date.now()
+    };
   } catch (error) {
     console.error("Error generating daily dharma:", error);
     return getFallbackDailyDrop(language);
   }
 };
 
+// Fixed: Added missing timestamp to return type
 const getFallbackDailyDrop = (language: Language): DailyDrop => {
   return {
     quote: language === 'si' 
@@ -122,13 +138,12 @@ const getFallbackDailyDrop = (language: Language): DailyDrop => {
     source: "Mahaparinibbana Sutta (DN 16)",
     reflection: language === 'si' 
       ? "සෑම මොහොතක්ම අගනේය, එය යහපත සඳහා යොදවන්න." 
-      : "Cherish every moment and use it to cultivate goodness."
+      : "Cherish every moment and use it to cultivate goodness.",
+    timestamp: Date.now()
   };
 };
 
 export const getMeditationGuide = async (type: string, duration: number, language: Language): Promise<string> => {
-    if (!apiKey) return language === 'si' ? "සුවපහසු ඉරියව්වක් ගන්න." : "Find a comfortable posture.";
-
     const prompt = `Write a short, calming introduction for a ${duration}-minute ${type} meditation session in ${language === 'si' ? 'Sinhala' : 'English'}. Keep it under 50 words.`;
     
     try {
@@ -143,8 +158,6 @@ export const getMeditationGuide = async (type: string, duration: number, languag
 };
 
 export const getLessonContent = async (topic: string, language: Language): Promise<string> => {
-    if (!apiKey) return language === 'si' ? "API යතුර නොමැත." : "API Key missing.";
-
     const prompt = `Explain the Buddhist concept of "${topic}" for a beginner student. 
     Language: ${language === 'si' ? 'Sinhala' : 'English'}.
     Structure:
@@ -165,8 +178,6 @@ export const getLessonContent = async (topic: string, language: Language): Promi
 };
 
 export const getMeditationFeedback = async (reflection: string, language: Language): Promise<string> => {
-    if (!apiKey) return "Sadhu! Sadhu!";
-
     const prompt = `The user just finished meditation and wrote this reflection: "${reflection}". 
     Provide a brief, encouraging response (max 2 sentences) based on Theravada Buddhism. 
     Language: ${language === 'si' ? 'Sinhala' : 'English'}.`;
@@ -183,8 +194,6 @@ export const getMeditationFeedback = async (reflection: string, language: Langua
 };
 
 export const askLessonQuestion = async (lessonTitle: string, question: string, language: Language): Promise<string> => {
-    if (!apiKey) return language === 'si' ? "පිළිතුරු දිය නොහැක." : "Cannot answer.";
-
     const prompt = `
       Context: The user is learning about "${lessonTitle}" in a Theravāda Buddhist app.
       User Question: "${question}"
