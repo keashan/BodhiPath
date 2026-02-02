@@ -2,9 +2,25 @@
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 import { Language, DailyDrop } from "../types";
 
-// Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
-// The API key must be obtained exclusively from the environment variable process.env.API_KEY.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to resolve environment variables in Vite/Browser contexts
+const getEnvVar = (key: string) => {
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env[key] || (import.meta as any).env[`VITE_${key}`];
+  }
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key] || process.env[`VITE_${key}`];
+  }
+  return undefined;
+};
+
+const API_KEY = getEnvVar('API_KEY') || getEnvVar('VITE_API_KEY');
+
+if (!API_KEY) {
+  console.error("Gemini API Key is missing. Please set VITE_API_KEY in your .env file or Vercel environment variables.");
+}
+
+// Initialize the client with the resolved key
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 export const getPersonalizedGuidance = async (language: Language, goals: string[]): Promise<string> => {
     const prompt = `
