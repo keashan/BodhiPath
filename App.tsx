@@ -21,6 +21,21 @@ function App() {
   const [currentPage, setCurrentPage] = useState<AppPage>('HOME');
   const [language, setLanguage] = useState<Language>('en');
 
+  // Robust Scroll-to-Top: Triggers on any major state change that renders a different view
+  useEffect(() => {
+    // We use a small timeout to ensure the browser has finished rendering the new component
+    // and hasn't attempted to "helpfully" restore the scroll position from the previous view.
+    const resetScroll = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTo(0, 0);
+      document.documentElement.scrollTo(0, 0);
+    };
+
+    resetScroll();
+    const timeoutId = setTimeout(resetScroll, 0);
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, preferences, isGuest, user]);
+
   // Handle Hash Routing
   useEffect(() => {
     const handleHashChange = () => {
@@ -115,7 +130,7 @@ function App() {
 
   // Public/Marketing Wrapper for other pages
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-stone-50 flex flex-col font-sans overflow-x-hidden">
       <main className="flex-1">
         {currentPage === 'HOME' && <LandingPage language={language} />}
         {currentPage === 'ABOUT' && <AboutUs language={language} />}

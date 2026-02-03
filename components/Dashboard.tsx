@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Globe, Compass, Loader2, Share2, Sparkles, ChevronRight } from 'lucide-react';
 import { UserPreferences, AppView, DailyDrop } from '../types';
 import { UI_TEXT } from '../constants';
@@ -29,6 +29,15 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const t = UI_TEXT[preferences.language];
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Reset scroll on view change
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [currentView]);
 
   useEffect(() => {
     const handleDailyWisdom = async () => {
@@ -221,7 +230,7 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
         </header>
 
         <div className="flex-1 flex overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-4 md:p-12 custom-scrollbar">
+            <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 md:p-12 custom-scrollbar">
                 {currentView === AppView.DASHBOARD && (
                     <div className="max-w-4xl mx-auto space-y-12 min-h-full flex flex-col">
                         <div className="flex-1 space-y-10">
@@ -343,7 +352,7 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
                     </div>
                 )}
 
-                {/* Other views remain connected */}
+                {/* Other views */}
                 {currentView === AppView.DAILY_DROPS && (
                     <DailyDropsView language={preferences.language} currentDrop={dailyDrop} history={dropHistory} onBack={() => setCurrentView(AppView.DASHBOARD)} />
                 )}
