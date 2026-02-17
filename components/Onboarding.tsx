@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Check } from 'lucide-react';
@@ -12,7 +11,7 @@ interface OnboardingProps {
 
 const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
-  const [language, setLanguage] = useState<Language>('en');
+  const [language] = useState<Language>('en');
   const [goals, setGoals] = useState<string[]>([]);
   const [receiveDailyDrops, setReceiveDailyDrops] = useState(true);
   const [isGuided, setIsGuided] = useState(false);
@@ -71,23 +70,18 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               </div>
               <h1 className="text-3xl font-serif text-stone-800 mb-4 font-bold">BodhiPath</h1>
               <p className="text-stone-600 mb-8 leading-relaxed font-serif italic">
-                {language === 'si' ? UI_TEXT.si.subtitle : UI_TEXT.en.subtitle}
+                {UI_TEXT.en.subtitle}
               </p>
               <button 
                 onClick={handleNext}
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-full font-medium transition-all shadow-lg shadow-orange-200"
               >
-                {language === 'si' ? UI_TEXT.si.startBtn : UI_TEXT.en.startBtn}
+                {UI_TEXT.en.startBtn}
               </button>
-              <div className="mt-4 flex justify-center space-x-4 text-sm text-stone-400">
-                <button onClick={() => setLanguage('en')} className={language === 'en' ? 'text-orange-600 font-bold' : ''}>English</button>
-                <span>|</span>
-                <button onClick={() => setLanguage('si')} className={language === 'si' ? 'text-orange-600 font-bold' : ''}>සිංහල</button>
-              </div>
             </motion.div>
           )}
 
-          {/* Step 2: Language */}
+          {/* Step 2: Goals */}
           {step === 2 && (
             <motion.div
                key="step2"
@@ -97,39 +91,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                exit="exit"
                className="bg-white rounded-3xl p-8 shadow-xl"
             >
-               <h2 className={`text-2xl font-serif text-stone-800 mb-6 ${language === 'si' ? 'font-sinhala' : ''}`}>
-                 {t.langSelect}
-               </h2>
-               <div className="space-y-4">
-                 <button 
-                   onClick={() => { setLanguage('en'); handleNext(); }}
-                   className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${language === 'en' ? 'border-orange-500 bg-orange-50' : 'border-stone-200 hover:border-orange-200'}`}
-                 >
-                   <span className="text-lg">English</span>
-                   {language === 'en' && <Check className="text-orange-500" />}
-                 </button>
-                 <button 
-                   onClick={() => { setLanguage('si'); handleNext(); }}
-                   className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all font-sinhala ${language === 'si' ? 'border-orange-500 bg-orange-50' : 'border-stone-200 hover:border-orange-200'}`}
-                 >
-                   <span className="text-lg">සිංහල</span>
-                   {language === 'si' && <Check className="text-orange-500" />}
-                 </button>
-               </div>
-            </motion.div>
-          )}
-
-          {/* Step 3: Goals */}
-          {step === 3 && (
-            <motion.div
-               key="step3"
-               variants={containerVariants}
-               initial="hidden"
-               animate="visible"
-               exit="exit"
-               className="bg-white rounded-3xl p-8 shadow-xl"
-            >
-               <h2 className={`text-2xl font-serif text-stone-800 mb-6 ${language === 'si' ? 'font-sinhala' : ''}`}>
+               <h2 className="text-2xl font-serif text-stone-800 mb-6">
                  {t.goalsTitle}
                </h2>
                <div className="space-y-3 mb-8">
@@ -142,7 +104,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                      <div className={`w-5 h-5 rounded-full border mr-3 flex items-center justify-center ${goals.includes(goal) ? 'bg-orange-500 border-orange-500' : 'border-stone-300'}`}>
                         {goals.includes(goal) && <Check size={12} className="text-white" />}
                      </div>
-                     <span className={language === 'si' ? 'font-sinhala' : ''}>{goal}</span>
+                     <span>{goal}</span>
                    </button>
                  ))}
                </div>
@@ -157,8 +119,38 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </motion.div>
           )}
 
-          {/* Step 4: Personalization */}
-          {step === 4 && (
+          {/* Step 3: Personalization */}
+          {step === 3 && (
+             <motion.div
+                key="step3"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="bg-white rounded-3xl p-8 shadow-xl"
+             >
+                <h2 className="text-2xl font-serif text-stone-800 mb-6">
+                  {t.personalizeTitle}
+                </h2>
+                <div className="space-y-4 mb-8">
+                   <button 
+                      onClick={() => { setIsGuided(true); handleNext(); }} 
+                      className="w-full p-4 bg-orange-100 text-orange-900 rounded-xl font-medium hover:bg-orange-200 transition-colors"
+                   >
+                     Yes, guide me
+                   </button>
+                   <button 
+                      onClick={() => { setIsGuided(false); handleNext(); }} 
+                      className="w-full p-4 bg-stone-100 text-stone-600 rounded-xl font-medium hover:bg-stone-200 transition-colors"
+                   >
+                     No, I’ll explore freely
+                   </button>
+                </div>
+             </motion.div>
+          )}
+
+           {/* Step 4: Daily Drops */}
+           {step === 4 && (
              <motion.div
                 key="step4"
                 variants={containerVariants}
@@ -167,56 +159,26 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 exit="exit"
                 className="bg-white rounded-3xl p-8 shadow-xl"
              >
-                <h2 className={`text-2xl font-serif text-stone-800 mb-6 ${language === 'si' ? 'font-sinhala' : ''}`}>
-                  {t.personalizeTitle}
-                </h2>
-                <div className="space-y-4 mb-8">
-                   <button 
-                      onClick={() => { setIsGuided(true); handleNext(); }} 
-                      className="w-full p-4 bg-orange-100 text-orange-900 rounded-xl font-medium hover:bg-orange-200 transition-colors"
-                   >
-                     {language === 'si' ? 'ඔව්, මග පෙන්වන්න' : 'Yes, guide me'}
-                   </button>
-                   <button 
-                      onClick={() => { setIsGuided(false); handleNext(); }} 
-                      className="w-full p-4 bg-stone-100 text-stone-600 rounded-xl font-medium hover:bg-stone-200 transition-colors"
-                   >
-                     {language === 'si' ? 'නැහැ, මමම සොයන්නම්' : 'No, I’ll explore freely'}
-                   </button>
-                </div>
-             </motion.div>
-          )}
-
-           {/* Step 5: Daily Drops */}
-           {step === 5 && (
-             <motion.div
-                key="step5"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="bg-white rounded-3xl p-8 shadow-xl"
-             >
-                <h2 className={`text-2xl font-serif text-stone-800 mb-6 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                <h2 className="text-2xl font-serif text-stone-800 mb-6">
                   {t.dailyDropTitle}
                 </h2>
                 <div className="flex space-x-4 mb-8">
                    <button onClick={() => { setReceiveDailyDrops(true); handleNext(); }} className="flex-1 p-6 bg-white border-2 border-stone-200 hover:border-orange-400 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all">
                       <span className="text-3xl">🌞</span>
-                      <span className="font-bold text-stone-700">{language === 'si' ? 'ඔව්' : 'Yes'}</span>
+                      <span className="font-bold text-stone-700">Yes</span>
                    </button>
                    <button onClick={() => { setReceiveDailyDrops(false); handleNext(); }} className="flex-1 p-6 bg-white border-2 border-stone-200 hover:border-stone-400 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all">
                       <span className="text-3xl">🌑</span>
-                      <span className="font-bold text-stone-700">{language === 'si' ? 'නැහැ' : 'No'}</span>
+                      <span className="font-bold text-stone-700">No</span>
                    </button>
                 </div>
              </motion.div>
           )}
 
-          {/* Step 6: Final */}
-          {step === 6 && (
+          {/* Step 5: Final */}
+          {step === 5 && (
              <motion.div
-                key="step6"
+                key="step5"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -226,10 +188,10 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 <div className="mb-6 flex justify-center">
                   <Logo className="w-24 h-24 animate-pulse" />
                 </div>
-                <h2 className={`text-2xl font-serif text-stone-800 mb-2 font-bold ${language === 'si' ? 'font-sinhala' : ''}`}>
+                <h2 className="text-2xl font-serif text-stone-800 mb-2 font-bold">
                   {t.finalTitle}
                 </h2>
-                <p className={`text-stone-600 mb-8 ${language === 'si' ? 'font-sinhala' : ''}`}>
+                <p className="text-stone-600 mb-8">
                   {t.finalSubtitle}
                 </p>
                 <button 

@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState, useRef } from 'react';
-import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Globe, Compass, Loader2, Share2, Sparkles, ChevronRight } from 'lucide-react';
+import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Compass, Loader2, Share2, Sparkles, ChevronRight } from 'lucide-react';
 import { UserPreferences, AppView, DailyDrop } from '../types';
 import { UI_TEXT } from '../constants';
 import ChatInterface from './ChatInterface';
@@ -81,14 +80,6 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
     };
     fetchGuidance();
   }, [preferences.isGuided, preferences.goals, preferences.language]);
-
-  const toggleLanguage = async () => {
-      const newLang = preferences.language === 'en' ? 'si' : 'en';
-      await onUpdatePreferences({
-          ...preferences,
-          language: newLang
-      });
-  };
 
   const handleShare = async () => {
     const shareData = {
@@ -197,13 +188,6 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
         </nav>
 
         <div className="p-6 space-y-3 border-t border-stone-50">
-             <button onClick={toggleLanguage} className="w-full flex items-center space-x-3 p-3.5 rounded-2xl text-stone-500 hover:bg-orange-50 hover:text-orange-900 transition-all">
-                <Globe size={18} />
-                <span className={`text-sm font-medium ${preferences.language === 'si' ? 'font-sinhala' : ''}`}>
-                    {preferences.language === 'en' ? 'සිංහල' : 'English'}
-                </span>
-             </button>
-
              <button 
                 onClick={() => setShowLogoutConfirm(true)}
                 className="w-full flex items-center space-x-3 p-3.5 rounded-2xl text-stone-400 hover:bg-red-50 hover:text-red-600 transition-all"

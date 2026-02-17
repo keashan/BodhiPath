@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { UserPreferences } from "../types";
 
 // Static replacement works best with direct property access.
@@ -95,4 +95,29 @@ export const getUserProfile = async (uid: string): Promise<UserPreferences | nul
         console.error("Error fetching user profile", error);
         return null;
     }
+};
+
+/**
+ * Saves a contact message to Firestore. 
+ * To enable actual email delivery to bodhipath@ktktools.net, 
+ * you should install the "Trigger Email from Firestore" extension in your Firebase console.
+ */
+export const saveContactMessage = async (name: string, email: string, message: string) => {
+  if (!isConfigValid) {
+    console.log("Offline/Mock mode: Saving contact message locally", { name, email, message });
+    return;
+  }
+  try {
+    await addDoc(collection(db, "contacts"), {
+      to: "bodhipath@ktktools.net", // Useful metadata for the Trigger Email extension
+      name,
+      email,
+      message,
+      createdAt: serverTimestamp(),
+      status: 'new'
+    });
+  } catch (error) {
+    console.error("Error saving contact message", error);
+    throw error;
+  }
 };

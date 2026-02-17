@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Globe, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import Logo from './Logo';
 import { UI_TEXT } from '../constants';
 import { Language } from '../types';
@@ -29,12 +28,6 @@ const Footer: React.FC<FooterProps> = ({ language, setLanguage }) => {
            <p className="text-stone-500 max-w-sm leading-relaxed font-serif italic">
               "Through Dhamma, we find the path to true liberation." BodhiPath is an AI-enhanced spiritual companion built to preserve and propagate Theravāda Buddhist wisdom.
            </p>
-           <button 
-              onClick={() => setLanguage(language === 'en' ? 'si' : 'en')}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full text-xs font-bold text-stone-600 hover:border-orange-300 transition-all"
-           >
-              <Globe size={14} /> {language === 'en' ? 'සිංහල' : 'English'}
-           </button>
         </div>
 
         <div className="space-y-4">
