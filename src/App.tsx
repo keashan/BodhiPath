@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, getUserProfile, saveUserProfile } from './services/firebase';
 import { Loader2 } from 'lucide-react';
-import Onboarding from './components/Onboarding';
-import Dashboard from './components/Dashboard';
-import Auth from './components/Auth';
-import LandingPage from './components/LandingPage';
-import AboutUs from './components/AboutUs';
-import ContactUs from './components/ContactUs';
-import LegalView from './components/LegalView';
-import PublicFooter from './components/Footer';
+import Onboarding from '@/src/components/Onboarding';
+import Dashboard from '@/src/components/Dashboard';
+import Auth from '@/src/components/Auth';
+import LandingPage from '@/src/components/LandingPage';
+import AboutUs from '@/src/components/AboutUs';
+import ContactUs from '@/src/components/ContactUs';
+import LegalView from '@/src/components/LegalView';
+import PublicFooter from '@/src/components/Footer';
 import { UserPreferences, AppPage, Language } from './types';
 
 function App() {

@@ -2,16 +2,16 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Compass, Loader2, Share2, Sparkles, ChevronRight } from 'lucide-react';
 import { UserPreferences, AppView, DailyDrop } from '../types';
 import { UI_TEXT } from '../constants';
-import ChatInterface from './ChatInterface';
-import MeditationHall from './MeditationHall';
-import DhammaClassroom from './DhammaClassroom';
-import KarmaJournal from './KarmaJournal';
-import SuttaExplorer from './SuttaExplorer';
-import DailyDropsView from './DailyDropsView';
-import { generateDailyDharma, getPersonalizedGuidance } from '../services/geminiService';
-import { auth, getDailyWisdom, getWisdomHistory, saveDailyWisdom } from '../services/firebase';
-import Logo from './Logo';
-import ConfirmModal from './ConfirmModal';
+import ChatInterface from '@/src/components/ChatInterface';
+import MeditationHall from '@/src/components/MeditationHall';
+import DhammaClassroom from '@/src/components/DhammaClassroom';
+import KarmaJournal from '@/src/components/KarmaJournal';
+import SuttaExplorer from '@/src/components/SuttaExplorer';
+import DailyDropsView from '@/src/components/DailyDropsView';
+import { generateDailyDharma, getPersonalizedGuidance } from '@/src/services/geminiService';
+import { auth, getDailyWisdom, getWisdomHistory, saveDailyWisdom } from '@/src/services/firebase';
+import Logo from '@/src/components/Logo';
+import ConfirmModal from '@/src/components/ConfirmModal';
 
 interface DashboardProps {
   preferences: UserPreferences;
