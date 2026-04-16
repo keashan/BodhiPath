@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import Auth from './components/Auth';
-import LandingPage from './components/Landing';
+import LandingPage from './components/LandingPage';
 import AboutUs from './components/AboutUs';
 import ContactUs from './components/ContactUs';
 import LegalView from './components/LegalView';
