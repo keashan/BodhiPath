@@ -1,5 +1,6 @@
 {
   "name": "BodhiPath",
   "description": "BodhiPath: Your serene AI companion for Theravāda Buddhism. Cultivate mindfulness and infinite kindness—embodying a heart as gentle as Aloka the peace dog—guided by the AI Monk, Bhante Bodhi.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": []
 }

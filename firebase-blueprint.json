@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "DailyDrop": {
+      "title": "DailyDrop",
+      "description": "A daily piece of Buddhist wisdom.",
+      "type": "object",
+      "properties": {
+        "quote": { "type": "string", "description": "The wisdom quote." },
+        "source": { "type": "string", "description": "The source of the quote (e.g. Sutta name)." },
+        "reflection": { "type": "string", "description": "A brief reflection on the quote." },
+        "timestamp": { "type": "number", "description": "The time the wisdom was generated." }
+      },
+      "required": ["quote", "source", "reflection", "timestamp"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User preferences and profile data.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "language": { "type": "string", "enum": ["en", "si"] },
+        "receiveDailyDrops": { "type": "boolean" },
+        "isGuided": { "type": "boolean" },
+        "goals": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "firestore": {
+    "/daily_wisdom/current": {
+      "schema": "DailyDrop",
+      "description": "The current daily wisdom for all users."
+    },
+    "/daily_wisdom_history/{id}": {
+      "schema": "DailyDrop",
+      "description": "History of daily wisdom."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    }
+  }
+}

@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: daily_wisdom
+    // Document ID: current
+    // Fields:
+    //   - quote: string (required)
+    //   - source: string (required)
+    //   - reflection: string (required)
+    //   - timestamp: number (required)
+    //
+    // Collection: daily_wisdom_history
+    // Document ID: auto-generated
+    // Fields:
+    //   - quote: string (required)
+    //   - source: string (required)
+    //   - reflection: string (required)
+    //   - timestamp: number (required)
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - name: string
+    //   - language: string (en/si)
+    //   - receiveDailyDrops: boolean
+    //   - isGuided: boolean
+    //   - goals: list of strings
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "keashanjayaweera@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isValidDailyDrop(data) {
+      return data.keys().hasAll(['quote', 'source', 'reflection', 'timestamp']) &&
+             data.quote is string && data.quote.size() > 0 && data.quote.size() < 2000 &&
+             data.source is string && data.source.size() > 0 && data.source.size() < 200 &&
+             data.reflection is string && data.reflection.size() > 0 && data.reflection.size() < 2000 &&
+             data.timestamp is number;
+    }
+
+    function isValidUser(data) {
+      return data.language in ['en', 'si'] &&
+             (!('name' in data) || (data.name is string && data.name.size() < 100));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /daily_wisdom/current {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidDailyDrop(request.resource.data);
+    }
+
+    match /daily_wisdom_history/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidDailyDrop(request.resource.data);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /contacts/{id} {
+      allow create: if true; // Allow anyone to send contact messages
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
