@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Check } from 'lucide-react';
-import { UI_TEXT, GOAL_OPTIONS } from '@/src/constants';
-import { UserPreferences, Language } from '@/src/types';
-import Logo from '@/src/components/Logo';
+import { UI_TEXT, GOAL_OPTIONS } from '../constants';
+import { UserPreferences, Language } from '../types';
+import Logo from './Logo';
 
 interface OnboardingProps {
   onComplete: (prefs: UserPreferences) => void;

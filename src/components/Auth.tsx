@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, signInWithGoogle } from '@/src/services/firebase';
+import { auth, signInWithGoogle } from '../services/firebase';
 import { Loader2, Mail, Lock, LogIn, User, AlertCircle } from 'lucide-react';
-import Logo from '@/src/components/Logo';
+import Logo from './Logo';
 
 interface AuthProps {
   onGuestLogin: () => void;
