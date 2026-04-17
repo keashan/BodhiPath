@@ -25,11 +25,18 @@ const toItalic = (text: string) => {
 };
 
 export default async function handler(request: any, response: any) {
-  // 1. Security check for Vercel Cron
-  // The header 'Authorization: Bearer <CRON_SECRET>' is sent by Vercel
+  // 1. Security check for External Trigger
+  // We allow either the Standard Authorization header OR a 'key' query parameter
   const authHeader = request.headers.authorization;
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return response.status(401).json({ error: 'Unauthorized' });
+  const queryKey = request.query?.key;
+  const cronSecret = process.env.CRON_SECRET;
+
+  const isAuthorized = 
+    (authHeader === `Bearer ${cronSecret}`) || 
+    (queryKey === cronSecret);
+
+  if (!isAuthorized) {
+    return response.status(401).json({ error: 'Unauthorized: Invalid or missing secret' });
   }
 
   try {
