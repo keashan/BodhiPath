@@ -2,7 +2,58 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { UserPreferences } from "../types";
+import { UserPreferences, DailyDrop } from "../types";
+
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId: string | undefined;
+    email: string | null | undefined;
+    emailVerified: boolean | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  }
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 // Static replacement works best with direct property access.
 // We use a safe fallback that works across Vite (dev) and Vercel (prod).
@@ -65,7 +116,9 @@ export const saveUserProfile = async (uid: string, data: UserPreferences) => {
     try {
         await setDoc(doc(db, "users", uid), data, { merge: true });
     } catch (error: any) {
-        if (error.code === 'permission-denied' || error.code === 'unavailable') {
+        if (error.code === 'permission-denied') {
+            handleFirestoreError(error, OperationType.WRITE, `users/${uid}`);
+        } else if (error.code === 'unavailable') {
             localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
         } else {
             console.error("Error saving user profile", error);
@@ -87,13 +140,47 @@ export const getUserProfile = async (uid: string): Promise<UserPreferences | nul
         }
         return null;
     } catch (error: any) {
-        if (error.code === 'permission-denied' || error.code === 'unavailable') {
+        if (error.code === 'permission-denied') {
+            handleFirestoreError(error, OperationType.GET, `users/${uid}`);
+        } else if (error.code === 'unavailable') {
              const localData = localStorage.getItem(getStorageKey(uid));
              if (localData) return JSON.parse(localData);
              return null;
         }
         console.error("Error fetching user profile", error);
         return null;
+    }
+};
+
+export const getDailyWisdom = async (dateKey: string, language: string): Promise<DailyDrop | null> => {
+    if (!isConfigValid) return null;
+    const path = `daily_wisdom/${dateKey}_${language}`;
+    try {
+        const docRef = doc(db, "daily_wisdom", `${dateKey}_${language}`);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data() as DailyDrop;
+        }
+        return null;
+    } catch (error: any) {
+        if (error.code === 'permission-denied') {
+            handleFirestoreError(error, OperationType.GET, path);
+        }
+        console.error("Error fetching daily wisdom", error);
+        return null;
+    }
+};
+
+export const saveDailyWisdom = async (dateKey: string, language: string, data: DailyDrop) => {
+    if (!isConfigValid) return;
+    const path = `daily_wisdom/${dateKey}_${language}`;
+    try {
+        await setDoc(doc(db, "daily_wisdom", `${dateKey}_${language}`), data);
+    } catch (error: any) {
+        if (error.code === 'permission-denied') {
+            handleFirestoreError(error, OperationType.WRITE, path);
+        }
+        console.error("Error saving daily wisdom", error);
     }
 };
 

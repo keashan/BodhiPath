@@ -8,14 +8,13 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({ className }) => {
   const [imageError, setImageError] = useState(false);
 
-  // 1. Try to load the image file from Imgur
+  // 1. Try to load the image file from public/logo.png
   if (!imageError) {
     return (
       <img 
-        src="https://i.imgur.com/R4Xn8Gb.png" 
+        src="/logo.png" 
         alt="BodhiPath Logo" 
         className={`object-contain ${className}`}
-        referrerPolicy="no-referrer"
         onError={() => setImageError(true)} 
       />
     );

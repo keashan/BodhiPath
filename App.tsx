@@ -40,18 +40,12 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      console.log('Hash changed:', hash);
       if (hash === '#/about') setCurrentPage('ABOUT');
       else if (hash === '#/contact') setCurrentPage('CONTACT');
       else if (hash === '#/terms') setCurrentPage('TERMS');
       else if (hash === '#/privacy') setCurrentPage('PRIVACY');
       else if (hash === '#/app') setCurrentPage('APP');
-      else {
-        setCurrentPage('HOME');
-        if (hash !== '' && hash !== '#/') {
-          window.location.hash = '#/';
-        }
-      }
+      else setCurrentPage('HOME');
     };
 
     window.addEventListener('hashchange', handleHashChange);
@@ -72,16 +66,7 @@ function App() {
       }
       setLoading(false);
     });
-
-    // Safety timeout: if auth doesn't respond in 5 seconds, stop loading
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-
-    return () => {
-      unsubscribe();
-      clearTimeout(timeout);
-    };
+    return () => unsubscribe();
   }, []);
 
   const handleGuestLogin = () => {

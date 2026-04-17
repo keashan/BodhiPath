@@ -5,13 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="BodhiPath: Your serene AI companion for Theravāda Buddhism. Cultivate mindfulness and infinite kindness—embodying a heart as gentle as Aloka the peace dog—guided by the AI Monk, Bhante Bodhi." />
     <title>BodhiPath - Learn Buddhism with AI</title>
-    <link rel="icon" type="image/png" href="https://i.imgur.com/R4Xn8Gb.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet" crossorigin="anonymous">
-  </head>
-  <body>
+    <style>
+      body {
+        font-family: 'Zen Maru Gothic', sans-serif;
+      }
+      .font-serif {
+        font-family: 'Noto Serif', serif;
+      }
+      .font-sinhala {
+        font-family: 'Noto Sans Sinhala', sans-serif;
+      }
+      /* Custom Scrollbar for serene feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f5f5f4; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d6d3d1; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a8a29e; 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react-dom": "https://esm.sh/react-dom@^19.2.4",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0?external=react,react-dom",
+    "framer-motion": "https://esm.sh/framer-motion@^12.29.2?external=react,react-dom",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
+    "firebase/": "https://esm.sh/firebase@^12.8.0/",
+    "@vercel/analytics/react": "https://esm.sh/@vercel/analytics@1.4.1/react?external=react,react-dom",
+    "@vercel/analytics/": "https://esm.sh/@vercel/analytics@^1.6.1/",
+    "html-to-image": "https://esm.sh/html-to-image@1.11.11"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-stone-50 text-stone-800 antialiased selection:bg-orange-200 selection:text-orange-900">
     <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

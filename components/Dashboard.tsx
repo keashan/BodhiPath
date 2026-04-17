@@ -9,7 +9,7 @@ import KarmaJournal from './KarmaJournal';
 import SuttaExplorer from './SuttaExplorer';
 import DailyDropsView from './DailyDropsView';
 import { generateDailyDharma, getPersonalizedGuidance } from '../services/geminiService';
-import { auth, getDailyWisdom, getWisdomHistory, saveDailyWisdom } from '../services/firebase';
+import { auth, getDailyWisdom, saveDailyWisdom } from '../services/firebase';
 import Logo from './Logo';
 import ConfirmModal from './ConfirmModal';
 
@@ -54,25 +54,50 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
     const handleDailyWisdom = async () => {
         if (!preferences.receiveDailyDrops) return;
 
-        // Fetch from Firestore
-        const today = await getDailyWisdom();
-        const history = await getWisdomHistory(10);
+        const date = new Date();
+        const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        const lang = preferences.language;
 
-        const now = Date.now();
-        const oneDay = 24 * 60 * 60 * 1000;
-
-        if (today && (now - today.timestamp < (oneDay * 0.8))) {
-            setDailyDrop(today);
-        } else {
-            // Fallback to local generation if Firestore is empty or stale
-            const newDropData = await generateDailyDharma(preferences.language);
-            const newDrop: DailyDrop = { ...newDropData, timestamp: now };
-            setDailyDrop(newDrop);
-            // Save to Firestore so other users see it
-            await saveDailyWisdom(newDrop);
-        }
-        
+        const savedHistory = localStorage.getItem('bodhi_drop_history');
+        const history: DailyDrop[] = savedHistory ? JSON.parse(savedHistory) : [];
         setDropHistory(history);
+
+        let today: DailyDrop | null = null;
+
+        // Try global Firebase first (works for both guests and logged-in users)
+        try {
+            today = await getDailyWisdom(dateKey, lang);
+
+            if (!today) {
+                const newDropData = await generateDailyDharma(lang);
+                today = { ...newDropData, timestamp: Date.now() };
+                await saveDailyWisdom(dateKey, lang, today);
+            }
+        } catch (error) {
+            console.log("Firebase daily wisdom fetch failed, falling back to local storage", error);
+            // Fallback to LocalStorage (e.g. if config is missing or network is down)
+            const savedToday = localStorage.getItem('bodhi_drop_today');
+            const localToday: DailyDrop | null = savedToday ? JSON.parse(savedToday) : null;
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            if (!localToday || (now - localToday.timestamp > oneDay)) {
+                if (localToday && !history.find(d => d.timestamp === localToday?.timestamp)) {
+                    const updatedHistory = [localToday, ...history].slice(0, 10);
+                    setDropHistory(updatedHistory);
+                    localStorage.setItem('bodhi_drop_history', JSON.stringify(updatedHistory));
+                }
+                const newDropData = await generateDailyDharma(lang);
+                today = { ...newDropData, timestamp: now };
+                localStorage.setItem('bodhi_drop_today', JSON.stringify(today));
+            } else {
+                today = localToday;
+            }
+        }
+
+        if (today) {
+            setDailyDrop(today);
+        }
     };
     handleDailyWisdom();
   }, [preferences.receiveDailyDrops, preferences.language]);

@@ -11,9 +11,7 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ language }) => {
-  const t = UI_TEXT[language] || UI_TEXT['en'];
-
-  if (!t) return <div className="p-20 text-center">Loading Wisdom...</div>;
+  const t = UI_TEXT[language];
 
   const navigateTo = (hash: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -21,28 +19,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ language }) => {
   };
 
   return (
-    <div className="relative overflow-hidden min-h-[80vh]">
+    <div className="relative overflow-hidden">
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 px-6 flex flex-col items-center text-center">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.2 }}
-                transition={{ duration: 2 }}
-                className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-orange-100 blur-[100px] rounded-full" 
-            />
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.3 }}
-                transition={{ duration: 2, delay: 0.5 }}
-                className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-stone-200 blur-[120px] rounded-full" 
-            />
+            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-orange-100 opacity-20 blur-[100px] rounded-full" />
+            <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-stone-200 opacity-30 blur-[120px] rounded-full" />
         </div>
 
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8"
         >
             <Logo className="w-24 h-24 md:w-32 md:h-32 drop-shadow-sm" />
         </motion.div>
@@ -50,7 +38,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ language }) => {
         <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
             className={`text-5xl md:text-7xl font-serif font-bold text-stone-900 mb-6 tracking-tight max-w-4xl leading-tight ${language === 'si' ? 'font-sinhala' : ''}`}
         >
             {language === 'si' ? 'බෝධි මාර්ගය: AI සහායෙන් බුදු දහම ඉගෙන ගන්න' : 'Bridge Ancient Wisdom with Modern AI'}
@@ -59,7 +46,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ language }) => {
         <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ delay: 0.1 }}
             className="text-stone-500 text-lg md:text-xl max-w-2xl mb-12 font-serif italic"
         >
             {t.subtitle}
@@ -68,7 +55,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ language }) => {
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ delay: 0.2 }}
             className="flex flex-col md:flex-row gap-4"
         >
             <a href="#/app" onClick={navigateTo('#/app')} className="px-10 py-5 bg-stone-900 text-white rounded-full font-bold text-lg hover:bg-black transition-all shadow-xl shadow-stone-200 flex items-center gap-2">

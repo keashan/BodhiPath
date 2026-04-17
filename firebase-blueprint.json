@@ -1,42 +1,58 @@
 {
   "entities": {
-    "DailyDrop": {
-      "title": "DailyDrop",
-      "description": "A daily piece of Buddhist wisdom.",
+    "User": {
+      "title": "User",
+      "description": "User profile with preferences",
       "type": "object",
       "properties": {
-        "quote": { "type": "string", "description": "The wisdom quote." },
-        "source": { "type": "string", "description": "The source of the quote (e.g. Sutta name)." },
-        "reflection": { "type": "string", "description": "A brief reflection on the quote." },
-        "timestamp": { "type": "number", "description": "The time the wisdom was generated." }
+        "hasCompletedOnboarding": { "type": "boolean" },
+        "language": { "type": "string", "enum": ["en", "si"] },
+        "goals": { "type": "array", "items": { "type": "string" } },
+        "receiveDailyDrops": { "type": "boolean" },
+        "isGuided": { "type": "boolean" },
+        "name": { "type": "string" }
+      },
+      "required": ["hasCompletedOnboarding", "language", "goals", "receiveDailyDrops", "isGuided"]
+    },
+    "DailyWisdom": {
+      "title": "Daily Wisdom",
+      "description": "Daily quote, source and reflection",
+      "type": "object",
+      "properties": {
+        "quote": { "type": "string" },
+        "source": { "type": "string" },
+        "reflection": { "type": "string" },
+        "timestamp": { "type": "number" }
       },
       "required": ["quote", "source", "reflection", "timestamp"]
     },
-    "UserProfile": {
-      "title": "UserProfile",
-      "description": "User preferences and profile data.",
+    "Contact": {
+      "title": "Contact",
+      "description": "User contact message",
       "type": "object",
       "properties": {
         "name": { "type": "string" },
-        "language": { "type": "string", "enum": ["en", "si"] },
-        "receiveDailyDrops": { "type": "boolean" },
-        "isGuided": { "type": "boolean" },
-        "goals": { "type": "array", "items": { "type": "string" } }
-      }
+        "email": { "type": "string", "format": "email" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "object" },
+        "to": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["name", "email", "message"]
     }
   },
   "firestore": {
-    "/daily_wisdom/current": {
-      "schema": "DailyDrop",
-      "description": "The current daily wisdom for all users."
-    },
-    "/daily_wisdom_history/{id}": {
-      "schema": "DailyDrop",
-      "description": "History of daily wisdom."
-    },
     "/users/{userId}": {
-      "schema": "UserProfile",
-      "description": "User profile documents."
+      "schema": "User",
+      "description": "Individual user preferences"
+    },
+    "/daily_wisdom/{wisdomId}": {
+      "schema": "DailyWisdom",
+      "description": "Global daily wisdom entries"
+    },
+    "/contacts/{contactId}": {
+      "schema": "Contact",
+      "description": "User feedback and messages"
     }
   }
 }
