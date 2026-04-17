@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, Share2, Quote, History, Calendar, Download, Loader2 } from 'lucide-react';
 import { Language, DailyDrop } from '../types';
 import { UI_TEXT } from '../constants';
-import { toPng } from 'https://esm.sh/html-to-image@1.11.11';
+import { toPng } from 'html-to-image';
 
 interface DailyDropsViewProps {
   language: Language;

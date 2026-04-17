@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Compass, Loader2, Share2, Sparkles, ChevronRight } from 'lucide-react';
+import { MessageCircle, Brain, BookOpen, PenTool, MapPin, Menu, X, Sun, LogOut, GraduationCap, Compass, Loader2, Share2, Sparkles, ChevronRight, Shield } from 'lucide-react';
 import { UserPreferences, AppView, DailyDrop } from '../types';
 import { UI_TEXT } from '../constants';
 import ChatInterface from './ChatInterface';
@@ -8,6 +8,7 @@ import DhammaClassroom from './DhammaClassroom';
 import KarmaJournal from './KarmaJournal';
 import SuttaExplorer from './SuttaExplorer';
 import DailyDropsView from './DailyDropsView';
+import AdminPanel from './AdminPanel';
 import { generateDailyDharma, getPersonalizedGuidance } from '../services/geminiService';
 import { auth, getDailyWisdom, saveDailyWisdom } from '../services/firebase';
 import Logo from './Logo';
@@ -66,13 +67,38 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
 
         // Try global Firebase first (works for both guests and logged-in users)
         try {
+            const date = new Date();
+            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const lang = preferences.language;
+
             today = await getDailyWisdom(dateKey, lang);
 
             if (!today) {
-                const newDropData = await generateDailyDharma(lang);
-                today = { ...newDropData, timestamp: Date.now() };
-                await saveDailyWisdom(dateKey, lang, today);
+                // If not in Firebase, check local cache first to avoid unnecessary generation/writes
+                const savedToday = localStorage.getItem('bodhi_drop_today');
+                const localToday: DailyDrop | null = savedToday ? JSON.parse(savedToday) : null;
+                const isStillValid = localToday && (Date.now() - localToday.timestamp < 12 * 60 * 60 * 1000);
+
+                if (isStillValid) {
+                   today = localToday;
+                } else {
+                   const newDropData = await generateDailyDharma(lang);
+                   today = { ...newDropData, timestamp: Date.now() };
+                }
+                
+                // Try to save to Firebase, but catch permission errors silently 
+                // as they usually mean another user (or tab) just saved it.
+                try {
+                  await saveDailyWisdom(dateKey, lang, today);
+                } catch (saveError: any) {
+                  // Silent catch for race conditions
+                  console.log("Note: Concurrent wisdom save suppressed.");
+                }
             }
+            
+            // Sync to local today for faster subsequent loads
+            localStorage.setItem('bodhi_drop_today', JSON.stringify(today));
+
         } catch (error) {
             console.log("Firebase daily wisdom fetch failed, falling back to local storage", error);
             // Fallback to LocalStorage (e.g. if config is missing or network is down)
@@ -141,6 +167,8 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
     e.preventDefault();
     window.location.hash = hash;
   };
+
+  const isAdmin = auth.currentUser?.email === 'keashanjayaweera@gmail.com';
 
   const NavItem = ({ view, icon: Icon, label, hasUpdate }: { view: AppView, icon: any, label: string, hasUpdate?: boolean }) => (
     <button 
@@ -218,6 +246,12 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
           <NavItem view={AppView.JOURNAL} icon={PenTool} label={t.journal} />
           <NavItem view={AppView.SUTTA} icon={BookOpen} label={t.suttaExplorer} />
           <NavItem view={AppView.TEMPLE} icon={MapPin} label={t.temple} />
+          {isAdmin && (
+            <>
+              <div className="h-px bg-stone-50 mx-4 my-2" />
+              <NavItem view={AppView.ADMIN} icon={Shield} label="Admin Console" />
+            </>
+          )}
         </nav>
 
         <div className="p-6 space-y-3 border-t border-stone-50">
@@ -369,6 +403,10 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
                     </div>
                 )}
 
+                {currentView === AppView.ADMIN && isAdmin && (
+                    <AdminPanel language={preferences.language} />
+                )}
+                
                 {/* Other views */}
                 {currentView === AppView.DAILY_DROPS && (
                     <DailyDropsView language={preferences.language} currentDrop={dailyDrop} history={dropHistory} onBack={() => setCurrentView(AppView.DASHBOARD)} />

@@ -10,7 +10,8 @@ export enum AppView {
   SUTTA = 'SUTTA',
   TEMPLE = 'TEMPLE',
   CLASSROOM = 'CLASSROOM',
-  DAILY_DROPS = 'DAILY_DROPS'
+  DAILY_DROPS = 'DAILY_DROPS',
+  ADMIN = 'ADMIN'
 }
 
 export type AppPage = 'HOME' | 'ABOUT' | 'CONTACT' | 'TERMS' | 'PRIVACY' | 'APP';
@@ -44,6 +45,10 @@ export interface DailyDrop {
   source: string;
   reflection: string;
   timestamp: number;
+  // Facebook Metadata (for automation tracking)
+  fb_posted?: boolean;
+  fb_posted_at?: number;
+  fb_post_id?: string;
 }
 
 export interface Lesson {

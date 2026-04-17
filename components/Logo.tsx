@@ -12,9 +12,10 @@ export const Logo: React.FC<LogoProps> = ({ className }) => {
   if (!imageError) {
     return (
       <img 
-        src="/logo.png" 
+        src="https://i.imgur.com/R4Xn8Gb.png" 
         alt="BodhiPath Logo" 
         className={`object-contain ${className}`}
+        referrerPolicy="no-referrer"
         onError={() => setImageError(true)} 
       />
     );

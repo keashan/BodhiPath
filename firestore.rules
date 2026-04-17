@@ -89,17 +89,18 @@ service cloud.firestore {
 
     match /daily_wisdom/{wisdomId} {
       allow read: if true;
-      
-      // ALLOW GUESTS: Allows guest users to generate and save the wisdom once per day.
-      // IDs are {dateKey}_{language}, ensuring uniqueness per day.
       allow create: if isValidWisdom(request.resource.data);
-      
-      // Metadata lockdown: Only admins or Cron job (via field diff) can update status.
       allow update: if isAdmin() || (
                        isValidWisdom(request.resource.data) && 
-                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fb_posted', 'fb_posted_at', 'fb_post_id'])
+                       (
+                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fb_posted', 'fb_posted_at', 'fb_post_id']) ||
+                         (
+                           request.resource.data.quote == resource.data.quote &&
+                           request.resource.data.source == resource.data.source &&
+                           request.resource.data.reflection == resource.data.reflection
+                         )
+                       )
                     );
-      
       allow delete: if isAdmin();
     }
 

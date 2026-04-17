@@ -1,5 +1,5 @@
-import { generateDailyDharma } from '../../services/geminiService.js';
-import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase.js';
+import { generateDailyDharma } from '../../services/geminiService.ts';
+import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase.ts';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 // Unicode mapping for Eye-Catching Social Media Text (Mathematical Alphanumeric Symbols)
@@ -16,8 +16,9 @@ const toBold = (text: string) => {
 const toItalic = (text: string) => {
   return text.split('').map(char => {
     const code = char.charCodeAt(0);
-    // Note: Italic Serif range starts at 1D434 for A, but has gaps (e.g., lowercase 'h' 1D44E)
-    // We use a simplified version here
+    // Mathematical Italic range: A-Z (1D434-1D44D), a-z (1D44E-1D467)
+    // Gap: small 'h' is U+210E
+    if (char === 'h') return String.fromCodePoint(0x210E);
     if (code >= 65 && code <= 90) return String.fromCodePoint(0x1D434 + (code - 65));
     if (code >= 97 && code <= 122) return String.fromCodePoint(0x1D44E + (code - 97));
     return char;
@@ -25,16 +26,40 @@ const toItalic = (text: string) => {
 };
 
 export default async function handler(request: any, response: any) {
-  console.log("--- BodhiPath Cron Handler v1.1 (ESM Fix Applied) ---");
+  // Health Check Mode: Call with ?check=1 to verify environment without posting
+  if (request.query?.check === '1') {
+    return response.status(200).json({
+      status: 'health_check',
+      nodeVersion: process.version,
+      hasFetch: typeof fetch !== 'undefined',
+      hasCronSecret: !!process.env.CRON_SECRET,
+      hasFbPageId: !!process.env.FB_PAGE_ID,
+      hasFbToken: !!process.env.FB_PAGE_ACCESS_TOKEN,
+      hasGeminiKey: !!(process.env.GEMINI_API_KEY || process.env.VITE_API_KEY),
+      hasFirebaseKeys: !!process.env.VITE_FIREBASE_API_KEY,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  console.log("--- BodhiPath Cron Handler v1.3 (Manual Support) ---");
   // 1. Security check for External Trigger
-  // We allow either the Standard Authorization header OR a 'key' query parameter
   const authHeader = request.headers.authorization;
   const queryKey = request.query?.key;
-  const cronSecret = process.env.CRON_SECRET;
+  const isForce = request.query?.force === '1';
+  const isManual = request.query?.manual === '1';
+  const cronSecret = process.env.CRON_SECRET?.trim();
 
   const isAuthorized = 
     (authHeader === `Bearer ${cronSecret}`) || 
     (queryKey === cronSecret);
+
+  console.log("Authorization Check:", { 
+    isAuthorized, 
+    hasHeader: !!authHeader, 
+    hasQuery: !!queryKey, 
+    secretExists: !!cronSecret,
+    queryKeyMatched: queryKey === cronSecret 
+  });
 
   if (!isAuthorized) {
     return response.status(401).json({ error: 'Unauthorized: Invalid or missing secret' });
@@ -47,6 +72,13 @@ export default async function handler(request: any, response: any) {
 
     // 2. Resolve Wisdom (Get or Generate)
     let wisdom = await getDailyWisdom(dateKey, lang);
+    
+    // Check if already posted using data from initial fetch
+    // Manual/Force triggers BYPASS this check
+    if (wisdom && (wisdom as any).fb_posted && !isForce) {
+      return response.status(200).json({ status: 'already_posted', timestamp: (wisdom as any).fb_posted_at });
+    }
+
     if (!wisdom) {
       console.log(`Wisdom not found for ${dateKey}, generating new one...`);
       const newDrop = await generateDailyDharma(lang);
@@ -54,37 +86,27 @@ export default async function handler(request: any, response: any) {
       await saveDailyWisdom(dateKey, lang, wisdom);
     }
 
-    // 3. Check if already posted to FB
-    // We store metadata in a separate document or the same wisdom document
-    // Let's use a 'metadata' field in the same document if possible, or a status doc
-    const wisdomRef = doc(db, "daily_wisdom", `${dateKey}_${lang}`);
-    const wisdomData = (await getDoc(wisdomRef)).data();
-    
-    if (wisdomData?.fb_posted) {
-      return response.status(200).json({ status: 'already_posted', timestamp: wisdomData.fb_posted_at });
-    }
-
     // 4. Randomization Logic (5 AM to 5 PM GMT)
-    // Cron runs hourly at 0 mins. Current hour in GMT is date.getUTCHours()
+    // Manual/Force triggers BYPASS this logic
     const currentHour = date.getUTCHours();
     const startHour = 5;
-    const endHour = 17; // 5 PM
+    const endHour = 17;
 
-    if (currentHour < startHour || currentHour > endHour) {
-      return response.status(200).json({ status: 'outside_window', hour: currentHour });
+    if (!isForce && !isManual) {
+      if (currentHour < startHour || currentHour > endHour) {
+        return response.status(200).json({ status: 'outside_window', hour: currentHour });
+      }
+
+      const hoursRemaining = endHour - currentHour;
+      const shouldPost = hoursRemaining <= 0 || Math.random() < 1 / (hoursRemaining + 1);
+
+      if (!shouldPost) {
+        return response.status(200).json({ status: 'skipping_randomly', hour: currentHour, hoursRemaining });
+      }
     }
 
-    // Probability check: if it's the last hour, 100% chance.
-    // Otherwise, 1/(hours_remaining) chance.
-    const hoursRemaining = endHour - currentHour;
-    const shouldPost = hoursRemaining <= 0 || Math.random() < 1 / (hoursRemaining + 1);
-
-    if (!shouldPost) {
-      return response.status(200).json({ status: 'skipping_randomly', hour: currentHour, hoursRemaining });
-    }
-
-    // 5. Format Post
-    const fbText = `
+    // 5. Format Post (Enhanced with Call-to-Action and Styling)
+    let fbText = `
 ${toBold("☸️ BODHIPATH DAILY WISDOM")}
 
 ${toItalic(`"${wisdom.quote}"`)}
@@ -94,25 +116,43 @@ ${toItalic(`"${wisdom.quote}"`)}
 ✨ ${toBold("Reflection:")}
 ${wisdom.reflection}
 
+---
+💬 ${toItalic("Explore the Dharma further—it's easy to learn Buddhism by chatting with Bhante Bodhi on our website.")}
+
+👉 ${toBold("Start your journey today:")} https://bodhipath.lk/
+
 🙏 May all beings be happy and peaceful.
-#Buddhism #Dhamma #DailyWisdom #BodhiPath #Mindfulness
+#Buddhism #Dhamma #DailyWisdom #BodhiPath #Mindfulness #Zen
     `.trim();
+
+    // Add a unique identifier for manual posts to prevent Facebook from hiding duplicates
+    if (isManual || isForce) {
+      fbText += `\n\n${toItalic(`(Manual verification: ${new Date().toLocaleTimeString()})`)}`;
+    }
 
     // 6. Post to Facebook
     const pageId = process.env.FB_PAGE_ID;
     const accessToken = process.env.FB_PAGE_ACCESS_TOKEN;
 
-    if (!pageId || !accessToken) {
-      throw new Error("Facebook Page ID or Access Token is missing from environment variables.");
+    if (!accessToken) {
+      throw new Error("Facebook Access Token is missing from environment variables.");
     }
 
-    const fbApiUrl = `https://graph.facebook.com/v25.0/${pageId}/feed`;
+    // Verify token identity first
+    const meResponse = await fetch(`https://graph.facebook.com/v20.0/me?access_token=${accessToken}`);
+    const meData = await meResponse.json();
+    console.log("Posting as Page Identity:", meData);
+
+    console.log(`Posting to Facebook using token identity ('${meData.name}' - ${meData.id})...`);
+    const wisdomRef = doc(db, "daily_wisdom", `${dateKey}_${lang}`);
+    const fbApiUrl = `https://graph.facebook.com/v20.0/me/feed`;
     const fbResponse = await fetch(fbApiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: fbText,
-        access_token: accessToken
+        access_token: accessToken,
+        published: true // Ensure it appears on the public timeline immediately
       })
     });
 
@@ -130,9 +170,15 @@ ${wisdom.reflection}
       fb_post_id: fbResult.id
     });
 
+    // Create a permalink (approximate) - FB IDs are often PageID_PostID
+    const postUrl = `https://www.facebook.com/${fbResult.id}`;
+
     return response.status(200).json({ 
       status: 'success', 
       postId: fbResult.id,
+      postUrl,
+      postedToPage: meData.name,
+      pageId: meData.id,
       hour: currentHour
     });
 
