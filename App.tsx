@@ -1,17 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, getUserProfile, saveUserProfile } from './services/firebase';
+import { auth, getUserProfile, saveUserProfile } from './services/firebase.js';
 import { Loader2 } from 'lucide-react';
-import Onboarding from './components/Onboarding';
-import Dashboard from './components/Dashboard';
-import Auth from './components/Auth';
-import LandingPage from './components/LandingPage';
-import AboutUs from './components/AboutUs';
-import ContactUs from './components/ContactUs';
-import LegalView from './components/LegalView';
-import PublicFooter from './components/Footer';
-import { UserPreferences, AppPage, Language } from './types';
+import Onboarding from './components/Onboarding.js';
+import Dashboard from './components/Dashboard.js';
+import Auth from './components/Auth.js';
+import LandingPage from './components/LandingPage.js';
+import AboutUs from './components/AboutUs.js';
+import ContactUs from './components/ContactUs.js';
+import LegalView from './components/LegalView.js';
+import PublicFooter from './components/Footer.js';
+import { UserPreferences, AppPage, Language } from './types.js';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);

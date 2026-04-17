@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
-import { Language, DailyDrop } from "../types";
+import { Language, DailyDrop } from "../types.js";
 
 // Helper to resolve environment variables in Vite/Browser contexts
 const getEnvVar = (key: string) => {

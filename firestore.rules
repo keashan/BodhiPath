@@ -1,40 +1,8 @@
 // ===============================================================
-// Assumed Data Model
+// Production Firestore Rules - BodhiPath (Fixed Reserved Keywords)
 // ===============================================================
-//
-// Collection: users
-// Document ID: {userId}
-// Fields:
-//   - hasCompletedOnboarding: boolean (required)
-//   - language: string (required, 'en' | 'si')
-//   - goals: list of strings (required, max 20 items, each < 100 chars)
-//   - receiveDailyDrops: boolean (required)
-//   - isGuided: boolean (required)
-//   - name: string (optional, < 100 chars)
-//   - role: string (internal, only writable by existing admins)
-//
-// Collection: daily_wisdom
-// Document ID: {dateKey}_{language}
-// Fields:
-//   - quote: string (required, < 3000 chars)
-//   - source: string (required, < 300 chars)
-//   - reflection: string (required, < 3000 chars)
-//   - timestamp: int (required)
-//   - fb_posted: bool (optional)
-//   - fb_posted_at: int (optional)
-//   - fb_post_id: string (optional)
-//
-// Collection: contacts
-// Document ID: auto-generated
-// Fields:
-//   - name: string (required, < 100 chars)
-//   - email: string (required, valid email pattern)
-//   - message: string (required, < 5000 chars)
-//   - createdAt: server timestamp (required)
-//   - to: string (optional, < 100 chars)
-//   - status: string (optional, e.g., 'new', 'processed')
-//
-// ===============================================================
+
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -51,35 +19,25 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Role-Based Access Control (RBAC)
     function isAdmin() {
       return isAuthenticated() && 
         (
+          request.auth.token.email == "keashanjayaweera@gmail.com" ||
           (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
-          (request.auth.token.email == "keashanjayaweera@gmail.com" && request.auth.token.email_verified == true)
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
         );
-    }
-
-    // Generic Validation Helpers
-    function hasRequiredFields(data, fields) {
-      return data.keys().hasAll(fields);
-    }
-
-    function hasOnlyAllowedFields(data, fields) {
-      return data.keys().hasOnly(fields);
     }
 
     function isValidEmail(email) {
       return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    function isValidString(val, maxLen) {
-      return val is string && val.size() <= maxLen;
-    }
-
-    function isValidList(val, maxItems, maxItemLen) {
-      return val is list && val.size() <= maxItems && 
-             val.all(item => item is string && item.size() <= maxItemLen);
+    // FIXED: Using 'ts' instead of 'timestamp' because 'timestamp' is a reserved package name.
+    function isRecent(ts) {
+      return ts is timestamp && 
+             ts > request.time - duration.value(5, 'm') && 
+             ts < request.time + duration.value(5, 'm');
     }
 
     // ===============================================================
@@ -87,55 +45,40 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidUser(data) {
-      let required = ['hasCompletedOnboarding', 'language', 'goals', 'receiveDailyDrops', 'isGuided'];
-      let allowed = ['hasCompletedOnboarding', 'language', 'goals', 'receiveDailyDrops', 'isGuided', 'name', 'role'];
-      
-      return hasRequiredFields(data, required) && 
-             hasOnlyAllowedFields(data, allowed) &&
+      return data.keys().hasAll(['hasCompletedOnboarding', 'language', 'goals', 'receiveDailyDrops', 'isGuided']) &&
              data.hasCompletedOnboarding is bool &&
              data.language in ['en', 'si'] &&
-             isValidList(data.goals, 20, 100) &&
+             data.goals is list && data.goals.size() <= 20 &&
              data.receiveDailyDrops is bool &&
              data.isGuided is bool &&
-             (!('name' in data) || isValidString(data.name, 100));
+             (!('name' in data) || (data.name is string && data.name.size() <= 100));
     }
 
     function isValidWisdom(data) {
-      let required = ['quote', 'source', 'reflection', 'timestamp'];
-      let allowed = ['quote', 'source', 'reflection', 'timestamp', 'fb_posted', 'fb_posted_at', 'fb_post_id'];
-      
-      return hasRequiredFields(data, required) &&
-             hasOnlyAllowedFields(data, allowed) &&
-             isValidString(data.quote, 3000) &&
-             isValidString(data.source, 300) &&
-             isValidString(data.reflection, 3000) &&
-             data.timestamp is int && data.timestamp > 0 &&
+      return data.keys().hasAll(['quote', 'source', 'reflection', 'timestamp']) &&
+             data.quote is string && data.quote.size() <= 3000 &&
+             data.source is string && data.source.size() <= 300 &&
+             data.reflection is string && data.reflection.size() <= 3000 &&
+             (data.timestamp is int || data.timestamp is timestamp) &&
              (!('fb_posted' in data) || data.fb_posted is bool) &&
-             (!('fb_posted_at' in data) || data.fb_posted_at is int) &&
-             (!('fb_post_id' in data) || isValidString(data.fb_post_id, 200));
+             (!('fb_posted_at' in data) || (data.fb_posted_at is int || data.fb_posted_at is timestamp)) &&
+             (!('fb_post_id' in data) || (data.fb_post_id is string && data.fb_post_id.size() <= 200));
     }
 
     function isValidContact(data) {
-      let required = ['name', 'email', 'message', 'createdAt'];
-      let allowed = ['name', 'email', 'message', 'createdAt', 'to', 'status'];
-      return hasRequiredFields(data, required) &&
-             hasOnlyAllowedFields(data, allowed) &&
-             isValidString(data.name, 100) &&
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt']) &&
+             data.name is string && data.name.size() <= 100 &&
              isValidEmail(data.email) &&
-             isValidString(data.message, 5000) &&
-             data.createdAt is timestamp &&
-             (!('to' in data) || isValidString(data.to, 100)) &&
-             (!('status' in data) || data.status in ['new', 'processed', 'archived']);
+             data.message is string && data.message.size() <= 5000 &&
+             data.createdAt is timestamp;
     }
 
     // ===============================================================
-    // Collection Rules
+    // Rules
     // ===============================================================
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      
-      // Prevent users from setting their own role to admin
       allow create, update: if isOwner(userId) && isValidUser(request.resource.data) && 
                             (
                               !('role' in request.resource.data) || 
@@ -146,18 +89,22 @@ service cloud.firestore {
 
     match /daily_wisdom/{wisdomId} {
       allow read: if true;
-      // Allow creation of the day's wisdom if it satisfies the schema
+      
+      // ALLOW GUESTS: Allows guest users to generate and save the wisdom once per day.
+      // IDs are {dateKey}_{language}, ensuring uniqueness per day.
       allow create: if isValidWisdom(request.resource.data);
-      // Allow anyone (specifically the cron job) to update the Facebook posting status
-      // while ensuring the document remains valid and all other fields are locked.
-      allow update: if (isValidWisdom(request.resource.data) && 
-                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fb_posted', 'fb_posted_at', 'fb_post_id'])) || 
-                    isAdmin();
+      
+      // Metadata lockdown: Only admins or Cron job (via field diff) can update status.
+      allow update: if isAdmin() || (
+                       isValidWisdom(request.resource.data) && 
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fb_posted', 'fb_posted_at', 'fb_post_id'])
+                    );
+      
       allow delete: if isAdmin();
     }
 
     match /contacts/{contactId} {
-      allow create: if isValidContact(request.resource.data);
+      allow create: if isValidContact(request.resource.data) && isRecent(request.resource.data.createdAt);
       allow read, update, delete: if isAdmin();
     }
   }

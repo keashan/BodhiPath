@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { UserPreferences, DailyDrop } from "../types";
+import { UserPreferences, DailyDrop } from "../types.js";
 
 export enum OperationType {
   CREATE = 'create',

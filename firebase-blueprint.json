@@ -16,13 +16,16 @@
     },
     "DailyWisdom": {
       "title": "Daily Wisdom",
-      "description": "Daily quote, source and reflection",
+      "description": "Daily quote, source and reflection with social media metadata",
       "type": "object",
       "properties": {
         "quote": { "type": "string" },
         "source": { "type": "string" },
         "reflection": { "type": "string" },
-        "timestamp": { "type": "number" }
+        "timestamp": { "type": "number" },
+        "fb_posted": { "type": "boolean" },
+        "fb_posted_at": { "type": "number" },
+        "fb_post_id": { "type": "string" }
       },
       "required": ["quote", "source", "reflection", "timestamp"]
     },

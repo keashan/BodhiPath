@@ -1,5 +1,5 @@
-import { generateDailyDharma } from '../../services/geminiService';
-import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase';
+import { generateDailyDharma } from '../../services/geminiService.js';
+import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase.js';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 // Unicode mapping for Eye-Catching Social Media Text (Mathematical Alphanumeric Symbols)
@@ -25,6 +25,7 @@ const toItalic = (text: string) => {
 };
 
 export default async function handler(request: any, response: any) {
+  console.log("--- BodhiPath Cron Handler v1.1 (ESM Fix Applied) ---");
   // 1. Security check for External Trigger
   // We allow either the Standard Authorization header OR a 'key' query parameter
   const authHeader = request.headers.authorization;
