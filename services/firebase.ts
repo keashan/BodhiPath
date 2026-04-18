@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { UserPreferences, DailyDrop } from "../types.js";
+import { UserPreferences, DailyDrop } from "../types";
 
 export enum OperationType {
   CREATE = 'create',
@@ -108,9 +108,22 @@ export const signInWithGoogle = async () => {
 
 const getStorageKey = (uid: string) => `bodhi_user_${uid}`;
 
+const getLocal = (key: string) => {
+    if (typeof localStorage !== 'undefined') {
+        return localStorage.getItem(key);
+    }
+    return null;
+}
+
+const setLocal = (key: string, value: string) => {
+    if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(key, value);
+    }
+}
+
 export const saveUserProfile = async (uid: string, data: UserPreferences) => {
     if (!isConfigValid) {
-        localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
+        setLocal(getStorageKey(uid), JSON.stringify(data));
         return;
     }
     try {
@@ -119,7 +132,7 @@ export const saveUserProfile = async (uid: string, data: UserPreferences) => {
         if (error.code === 'permission-denied') {
             handleFirestoreError(error, OperationType.WRITE, `users/${uid}`);
         } else if (error.code === 'unavailable') {
-            localStorage.setItem(getStorageKey(uid), JSON.stringify(data));
+            setLocal(getStorageKey(uid), JSON.stringify(data));
         } else {
             console.error("Error saving user profile", error);
             throw error;
@@ -129,7 +142,7 @@ export const saveUserProfile = async (uid: string, data: UserPreferences) => {
 
 export const getUserProfile = async (uid: string): Promise<UserPreferences | null> => {
     if (!isConfigValid) {
-         const localData = localStorage.getItem(getStorageKey(uid));
+         const localData = getLocal(getStorageKey(uid));
          return localData ? JSON.parse(localData) : null;
     }
     try {
@@ -143,7 +156,7 @@ export const getUserProfile = async (uid: string): Promise<UserPreferences | nul
         if (error.code === 'permission-denied') {
             handleFirestoreError(error, OperationType.GET, `users/${uid}`);
         } else if (error.code === 'unavailable') {
-             const localData = localStorage.getItem(getStorageKey(uid));
+             const localData = getLocal(getStorageKey(uid));
              if (localData) return JSON.parse(localData);
              return null;
         }

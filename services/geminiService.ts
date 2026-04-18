@@ -1,28 +1,33 @@
 
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
-import { Language, DailyDrop } from "../types.js";
+import { Language, DailyDrop } from "../types";
 
 // Helper to resolve environment variables in Vite/Browser contexts
 const getEnvVar = (key: string) => {
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
-    return (import.meta as any).env[key] || (import.meta as any).env[`VITE_${key}`];
-  }
   if (typeof process !== 'undefined' && process.env) {
     return process.env[key] || process.env[`VITE_${key}`];
+  }
+  // @ts-ignore - Handle Vite env if present
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key] || import.meta.env[`VITE_${key}`];
   }
   return undefined;
 };
 
-const API_KEY = getEnvVar('API_KEY') || getEnvVar('VITE_API_KEY');
-
-if (!API_KEY) {
-  console.error("Gemini API Key is missing. Please set VITE_API_KEY in your .env file or Vercel environment variables.");
-}
-
-// Initialize the client with the resolved key
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+let genAI: GoogleGenAI | null = null;
+const getGenAI = () => {
+  if (!genAI) {
+    const API_KEY = getEnvVar('API_KEY') || getEnvVar('VITE_API_KEY');
+    if (!API_KEY) {
+      console.warn("Gemini API Key is missing. AI features may fail.");
+    }
+    genAI = new GoogleGenAI(API_KEY || "DUMMY_KEY");
+  }
+  return genAI;
+};
 
 export const getPersonalizedGuidance = async (language: Language, goals: string[]): Promise<string> => {
+    const ai = getGenAI();
     const prompt = `
       You are Bhante Bodhi, a Theravada Monk. 
       The user has chosen the following goals for their Buddhist practice: ${goals.join(', ')}.
@@ -46,6 +51,7 @@ export const getPersonalizedGuidance = async (language: Language, goals: string[
 };
 
 export const createChatSession = (language: Language, userGoals: string[], isDebateMode: boolean = false): Chat => {
+  const ai = getGenAI();
   let systemInstruction = `
     You are Bhante Bodhi, a wise, compassionate, and gentle Theravāda Buddhist monk.
     Your goal is to guide the user on their spiritual path.
@@ -83,6 +89,7 @@ export const createChatSession = (language: Language, userGoals: string[], isDeb
 };
 
 export const createSuttaChatSession = (language: Language): Chat => {
+  const ai = getGenAI();
   const systemInstruction = `
     You are a specialized Sutta Navigator for the Pali Canon (Theravāda Tipitaka).
     Your goal is to help users find, explore, and understand specific suttas.
@@ -106,6 +113,7 @@ export const createSuttaChatSession = (language: Language): Chat => {
 };
 
 export const generateDailyDharma = async (language: Language): Promise<DailyDrop> => {
+  const ai = getGenAI();
   try {
     const prompt = language === 'si' 
       ? "Provide a short, inspiring quote from the Theravāda Buddhist Pali Canon in Sinhala, followed by its source (Sutta name), and a very brief 1-sentence reflection for daily life." 
@@ -131,7 +139,6 @@ export const generateDailyDharma = async (language: Language): Promise<DailyDrop
     const text = response.text;
     if (!text || !text.trim()) throw new Error("No content generated");
     
-    // Combining AI response with a timestamp to satisfy DailyDrop interface
     const parsed = JSON.parse(text);
     return {
       quote: parsed.quote,
@@ -145,7 +152,6 @@ export const generateDailyDharma = async (language: Language): Promise<DailyDrop
   }
 };
 
-// Fixed: Added missing timestamp to return type
 const getFallbackDailyDrop = (language: Language): DailyDrop => {
   return {
     quote: language === 'si' 
@@ -160,6 +166,7 @@ const getFallbackDailyDrop = (language: Language): DailyDrop => {
 };
 
 export const getMeditationGuide = async (type: string, duration: number, language: Language): Promise<string> => {
+    const ai = getGenAI();
     const prompt = `Write a short, calming introduction for a ${duration}-minute ${type} meditation session in ${language === 'si' ? 'Sinhala' : 'English'}. Keep it under 50 words.`;
     
     try {
@@ -174,6 +181,7 @@ export const getMeditationGuide = async (type: string, duration: number, languag
 };
 
 export const getLessonContent = async (topic: string, language: Language): Promise<string> => {
+    const ai = getGenAI();
     const prompt = `Explain the Buddhist concept of "${topic}" for a beginner student. 
     Language: ${language === 'si' ? 'Sinhala' : 'English'}.
     Structure:
@@ -194,6 +202,7 @@ export const getLessonContent = async (topic: string, language: Language): Promi
 };
 
 export const getMeditationFeedback = async (reflection: string, language: Language): Promise<string> => {
+    const ai = getGenAI();
     const prompt = `The user just finished meditation and wrote this reflection: "${reflection}". 
     Provide a brief, encouraging response (max 2 sentences) based on Theravada Buddhism. 
     Language: ${language === 'si' ? 'Sinhala' : 'English'}.`;
@@ -210,6 +219,7 @@ export const getMeditationFeedback = async (reflection: string, language: Langua
 };
 
 export const askLessonQuestion = async (lessonTitle: string, question: string, language: Language): Promise<string> => {
+    const ai = getGenAI();
     const prompt = `
       Context: The user is learning about "${lessonTitle}" in a Theravāda Buddhist app.
       User Question: "${question}"

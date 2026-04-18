@@ -1,4 +1,4 @@
-import { processWisdom } from '../_shared/handler.ts';
+import { processWisdom } from '../_shared/handler';
 
 export default async function handler(req: any, res: any) {
   try {
