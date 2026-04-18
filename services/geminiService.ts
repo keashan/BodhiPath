@@ -2,26 +2,37 @@
 import { GoogleGenAI, Chat, GenerateContentResponse, Type } from "@google/genai";
 import { Language, DailyDrop } from "../types";
 
-// Helper to resolve environment variables in Vite/Browser contexts
-const getEnvVar = (key: string) => {
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[key] || process.env[`VITE_${key}`];
-  }
-  // @ts-ignore - Handle Vite env if present
+// Helper to statically resolve environment variables for Vite/Vercel
+const getGeminiApiKey = () => {
+  // 1. Static Vite Context (requires explicit string paths for bundler replacement)
+  // @ts-ignore
   if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[key] || import.meta.env[`VITE_${key}`];
+    // @ts-ignore
+    if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
+    // @ts-ignore
+    if (import.meta.env.VITE_GEMINI_API_KEY) return import.meta.env.VITE_GEMINI_API_KEY;
   }
+  
+  // 2. Node.js Context (Serverless / Express)
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
+    if (process.env.VITE_GEMINI_API_KEY) return process.env.VITE_GEMINI_API_KEY;
+    if (process.env.API_KEY) return process.env.API_KEY;
+    if (process.env.VITE_API_KEY) return process.env.VITE_API_KEY;
+  }
+  
   return undefined;
 };
 
 let genAI: GoogleGenAI | null = null;
 const getGenAI = () => {
   if (!genAI) {
-    const API_KEY = getEnvVar('API_KEY') || getEnvVar('VITE_API_KEY');
+    const API_KEY = getGeminiApiKey();
     if (!API_KEY) {
       console.warn("Gemini API Key is missing. AI features may fail.");
     }
-    genAI = new GoogleGenAI(API_KEY || "DUMMY_KEY");
+    // IMPORTANT: GoogleGenAI requires an object with the apiKey property
+    genAI = new GoogleGenAI({ apiKey: API_KEY || "DUMMY_KEY_PREVENTS_CRASH" });
   }
   return genAI;
 };
