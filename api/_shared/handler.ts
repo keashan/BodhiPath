@@ -1,5 +1,5 @@
-import { generateDailyDharma } from '../../services/geminiService';
-import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase';
+import { generateDailyDharma } from '../../services/geminiService.js';
+import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase.js';
 import { doc, updateDoc } from 'firebase/firestore';
 
 // Unicode mapping for Eye-Catching Social Media Text (Mathematical Alphanumeric Symbols)
