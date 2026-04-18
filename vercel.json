@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/logo.png",
+      "destination": "https://i.imgur.com/R4Xn8Gb.png",
+      "permanent": true
+    }
+  ]
+}
