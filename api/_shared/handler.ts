@@ -28,6 +28,7 @@ export async function processWisdom(request: any, response: any) {
   if (request.query?.check === '1') {
     return response.status(200).json({
       status: 'health_check',
+      message: 'BodhiPath API is healthy and ready.',
       nodeVersion: process.version,
       hasFetch: typeof fetch !== 'undefined',
       hasCronSecret: !!process.env.CRON_SECRET,
@@ -65,7 +66,11 @@ export async function processWisdom(request: any, response: any) {
     
     // Check if already posted using data from initial fetch
     if (wisdom && (wisdom as any).fb_posted && !isForce) {
-      return response.status(200).json({ status: 'already_posted', timestamp: (wisdom as any).fb_posted_at });
+      return response.status(200).json({ 
+        status: 'already_posted', 
+        message: 'SKIP: A post has already been sent for today.',
+        timestamp: (wisdom as any).fb_posted_at 
+      });
     }
 
     if (!wisdom) {
@@ -82,14 +87,23 @@ export async function processWisdom(request: any, response: any) {
 
     if (!isForce && !isManual) {
       if (currentHour < startHour || currentHour > endHour) {
-        return response.status(200).json({ status: 'outside_window', hour: currentHour });
+        return response.status(200).json({ 
+          status: 'outside_window', 
+          message: `SKIP: Current hour (${currentHour}) is outside the allowed 5 AM - 5 PM GMT window.`,
+          hour: currentHour 
+        });
       }
 
       const hoursRemaining = endHour - currentHour;
       const shouldPost = hoursRemaining <= 0 || Math.random() < 1 / (hoursRemaining + 1);
 
       if (!shouldPost) {
-        return response.status(200).json({ status: 'skipping_randomly', hour: currentHour, hoursRemaining });
+        return response.status(200).json({ 
+          status: 'skipping_randomly', 
+          message: `SKIP: Randomly deferred to a later hour. (${hoursRemaining} hours remaining in window)`,
+          hour: currentHour, 
+          hoursRemaining 
+        });
       }
     }
 
@@ -158,6 +172,7 @@ ${wisdom.reflection}
 
     return response.status(200).json({ 
       status: 'success', 
+      message: `SUCCESS: Wisdom post sent to Facebook page "${meData.name}".`,
       postId: fbResult.id,
       postUrl,
       postedToPage: meData.name,
