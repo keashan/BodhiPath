@@ -1,3 +1,5 @@
+import { processWisdom } from '../_shared/handler.ts';
+
 export default async function handler(req: any, res: any) {
   try {
     const cronSecret = process.env.CRON_SECRET?.trim();
@@ -14,8 +16,7 @@ export default async function handler(req: any, res: any) {
     // Also keep as query parameter for redundancy
     req.query = { ...req.query, key: cronSecret };
     
-    const { default: actualHandler } = await import("../cron/post-wisdom.ts");
-    return await actualHandler(req, res);
+    return await processWisdom(req, res);
   } catch (error: any) {
     console.error("Proxy Error:", error);
     return res.status(500).json({ 
