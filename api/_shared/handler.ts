@@ -66,11 +66,7 @@ export async function processWisdom(request: any, response: any) {
     
     // Check if already posted using data from initial fetch
     if (wisdom && (wisdom as any).fb_posted && !isForce) {
-      return response.status(200).json({ 
-        status: 'already_posted', 
-        message: 'SKIP: A post has already been sent for today.',
-        timestamp: (wisdom as any).fb_posted_at 
-      });
+      return response.setHeader('Content-Type', 'text/plain').send('SKIP: A post has already been sent for today.');
     }
 
     if (!wisdom) {
@@ -87,23 +83,14 @@ export async function processWisdom(request: any, response: any) {
 
     if (!isForce && !isManual) {
       if (currentHour < startHour || currentHour > endHour) {
-        return response.status(200).json({ 
-          status: 'outside_window', 
-          message: `SKIP: Current hour (${currentHour}) is outside the allowed 5 AM - 5 PM GMT window.`,
-          hour: currentHour 
-        });
+        return response.setHeader('Content-Type', 'text/plain').send(`SKIP: Current hour (${currentHour}) is outside the allowed 5 AM - 5 PM GMT window.`);
       }
 
       const hoursRemaining = endHour - currentHour;
       const shouldPost = hoursRemaining <= 0 || Math.random() < 1 / (hoursRemaining + 1);
 
       if (!shouldPost) {
-        return response.status(200).json({ 
-          status: 'skipping_randomly', 
-          message: `SKIP: Randomly deferred to a later hour. (${hoursRemaining} hours remaining in window)`,
-          hour: currentHour, 
-          hoursRemaining 
-        });
+        return response.setHeader('Content-Type', 'text/plain').send(`SKIP: Randomly deferred to a later hour. (${hoursRemaining} hours remaining in window)`);
       }
     }
 
@@ -168,17 +155,7 @@ ${wisdom.reflection}
       fb_post_id: fbResult.id
     });
 
-    const postUrl = `https://www.facebook.com/${fbResult.id}`;
-
-    return response.status(200).json({ 
-      status: 'success', 
-      message: `SUCCESS: Wisdom post sent to Facebook page "${meData.name}".`,
-      postId: fbResult.id,
-      postUrl,
-      postedToPage: meData.name,
-      pageId: meData.id,
-      hour: currentHour
-    });
+    return response.setHeader('Content-Type', 'text/plain').send(`SUCCESS: Wisdom post sent to Facebook page "${meData.name}". ID: ${fbResult.id}`);
 
   } catch (error: any) {
     console.error("Wisdom Processor Error:", error);
