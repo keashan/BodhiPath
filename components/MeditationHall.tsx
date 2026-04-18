@@ -24,6 +24,18 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
   const [loadingFeedback, setLoadingFeedback] = useState(false);
 
   const t = UI_TEXT[language];
+  
+  // Inject Ad Script
+  useEffect(() => {
+    const scriptSrc = "https://pl28736586.profitablecpmratenetwork.com/d8c772d201c9897096542407c0adf8a0/invoke.js";
+    if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
+        const script = document.createElement('script');
+        script.async = true;
+        script.dataset.cfasync = "false";
+        script.src = scriptSrc;
+        document.body.appendChild(script);
+    }
+  }, []);
 
   useEffect(() => {
     setTimeLeft(duration * 60);
@@ -324,6 +336,12 @@ const MeditationHall: React.FC<MeditationHallProps> = ({ language }) => {
                                 {loadingFeedback ? 'Processing...' : 'Reflect & Complete'}
                             </button>
                             <button onClick={closeFeedback} className="w-full mt-2 text-stone-500 py-2 hover:text-stone-700">Skip Reflection</button>
+                            
+                            {/* Ad Section */}
+                            <div className="mt-6 pt-6 border-t border-stone-100">
+                                <p className="text-[10px] text-stone-400 uppercase tracking-widest text-center mb-4">Advertisement</p>
+                                <div id="container-d8c772d201c9897096542407c0adf8a0" className="flex justify-center"></div>
+                            </div>
                           </>
                       ) : (
                           <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 text-center">

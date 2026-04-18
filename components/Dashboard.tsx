@@ -34,7 +34,7 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
 
   // Inject Ad Script
   useEffect(() => {
-    const scriptSrc = "https://anniversaryvacuumambassador.com/d8c772d201c9897096542407c0adf8a0/invoke.js";
+    const scriptSrc = "https://pl28736586.profitablecpmratenetwork.com/d8c772d201c9897096542407c0adf8a0/invoke.js";
     if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
         const script = document.createElement('script');
         script.async = true;
