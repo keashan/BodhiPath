@@ -108,10 +108,10 @@ ${wisdom.reflection}
 ---
 💬 ${toItalic("Explore the Dharma further—it's easy to learn Buddhism by chatting with Bhante Bodhi on our website.")}
 
-👉 ${toBold("Start your journey today:")} https://bodhipath.lk/
+👉 ${toBold("Learn Buddhism with Bhante Bodhi:")} https://bodhipath.lk/
 
 🙏 May all beings be happy and peaceful.
-#Buddhism #Dhamma #DailyWisdom #BodhiPath #Mindfulness #Zen
+#Buddhism #Dhamma #DailyWisdom #BodhiPath #Mindfulness #Zen #Theravada #theravadabuddhism
     `.trim();
 
     if (isManual || isForce) {

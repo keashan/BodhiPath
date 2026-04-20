@@ -445,7 +445,6 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
             <aside className="hidden xl:flex w-80 bg-[#faf9f8] border-l border-stone-100 flex-col p-8 shrink-0">
                 <div className="w-full h-full rounded-[2.5rem] bg-white border border-stone-100 shadow-sm flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 opacity-20" />
-                    <p className="text-[10px] text-stone-300 font-bold uppercase tracking-[0.3em] mb-4">Awaiting Reflection</p>
                     <div id="container-d8c772d201c9897096542407c0adf8a0" className="w-full flex items-center justify-center"></div>
                 </div>
             </aside>
