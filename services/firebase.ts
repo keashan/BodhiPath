@@ -86,7 +86,7 @@ const isConfigValid = !!firebaseConfig.apiKey;
 
 // Initialize Firebase with fallback to prevent crash
 const app = initializeApp(isConfigValid ? firebaseConfig : { 
-    apiKey: "AIzaSy_DUMMY_KEY_PREVENTS_CRASH", 
+    apiKey: "MISSING_API_KEY_FALLBACK", 
     authDomain: "dummy.firebaseapp.com",
     projectId: "dummy-project",
     appId: "1:123456789:web:dummy"
