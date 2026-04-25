@@ -15,7 +15,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ language }) => {
   const [todayStatus, setTodayStatus] = useState<{ posted: boolean; at?: number; id?: string } | null>(null);
   
   const date = new Date();
-  const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Colombo',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  });
+  const parts = formatter.formatToParts(date);
+  const y = parts.find(p => p.type === 'year')?.value;
+  const m = parts.find(p => p.type === 'month')?.value;
+  const d = parts.find(p => p.type === 'day')?.value;
+  const dateKey = `${y}-${m}-${d}`;
 
   useEffect(() => {
     // Listen to today's wisdom doc for real-time status
@@ -67,7 +77,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ language }) => {
         const errorText = await resp.text();
         throw new Error(`HTTP ${resp.status}: ${errorText || 'Unknown Error'}`);
       }
-      const data = await resp.json();
+      const text = await resp.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        // If not JSON, it's the plain text message the user requested
+        data = { message: text, status: 'text_response' };
+      }
       console.log("Manual Post Success:", data);
       setManualResult(data);
     } catch (err: any) {
@@ -204,11 +221,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ language }) => {
                   <div className="bg-white p-3 rounded-lg border border-stone-100">
                     <p className="text-[10px] text-stone-400 font-bold uppercase mb-2">Manual Trigger Results</p>
                     
-                    <div className="mb-3 p-3 bg-stone-50 rounded-xl border border-stone-100">
-                      <p className="text-xs text-stone-500 mb-1">Posted to Page:</p>
-                      <p className="text-sm font-serif font-bold text-stone-800">{manualResult.postedToPage || 'N/A'}</p>
-                      <p className="text-[10px] text-stone-400 font-mono">ID: {manualResult.pageId || 'N/A'}</p>
-                    </div>
+                    {manualResult.message && (
+                      <div className={`mb-3 p-3 rounded-xl border ${manualResult.status === 'text_response' ? 'bg-blue-50 border-blue-100 text-blue-800' : 'bg-emerald-50 border-emerald-100 text-emerald-800'}`}>
+                        <p className="text-xs font-bold mb-1">Response Message:</p>
+                        <p className="text-sm font-medium">{manualResult.message}</p>
+                      </div>
+                    )}
+
+                    {manualResult.postedToPage && (
+                      <div className="mb-3 p-3 bg-stone-50 rounded-xl border border-stone-100">
+                        <p className="text-xs text-stone-500 mb-1">Posted to Page:</p>
+                        <p className="text-sm font-serif font-bold text-stone-800">{manualResult.postedToPage}</p>
+                        <p className="text-[10px] text-stone-400 font-mono">ID: {manualResult.pageId || 'N/A'}</p>
+                      </div>
+                    )}
                     
                     {manualResult.postUrl && (
                       <a 

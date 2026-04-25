@@ -1,6 +1,7 @@
 import { generateDailyDharma } from '../../services/geminiService.js';
 import { getDailyWisdom, saveDailyWisdom, db } from '../../services/firebase.js';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, runTransaction } from 'firebase/firestore';
+import { DailyDrop } from '../../types.js';
 
 // Unicode mapping for Eye-Catching Social Media Text (Mathematical Alphanumeric Symbols)
 const toBold = (text: string) => {
@@ -58,23 +59,68 @@ export async function processWisdom(request: any, response: any) {
 
   try {
     const date = new Date();
-    const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    const lang = 'en';
-
-    // 2. Resolve Wisdom (Get or Generate)
-    let wisdom = await getDailyWisdom(dateKey, lang);
+    // Use Asia/Colombo as the anchor timezone for "Daily" consistency
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Colombo',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
+    const parts = formatter.formatToParts(date);
+    const y = parts.find(p => p.type === 'year')?.value;
+    const m = parts.find(p => p.type === 'month')?.value;
+    const d = parts.find(p => p.type === 'day')?.value;
+    const dateKey = `${y}-${m}-${d}`;
     
-    // Check if already posted using data from initial fetch
-    if (wisdom && (wisdom as any).fb_posted && !isForce) {
-      return response.setHeader('Content-Type', 'text/plain').send('SKIP: A post has already been sent for today.');
-    }
+    const lang = 'en';
+    const wisdomRef = doc(db, "daily_wisdom", `${dateKey}_${lang}`);
 
+    // 2. Resolve Wisdom (Get or Generate) - Part 1: Check existing
+    let wisdom = await getDailyWisdom(dateKey, lang);
     if (!wisdom) {
       console.log(`Wisdom not found for ${dateKey}, generating new one...`);
       const newDrop = await generateDailyDharma(lang);
       wisdom = { ...newDrop, timestamp: Date.now() };
-      await saveDailyWisdom(dateKey, lang, wisdom);
     }
+
+    // 3. Claim Posting Rights with a Transaction
+    // This prevents race conditions where duplicate cron calls or manual triggers hit at once.
+    const claimResult = await runTransaction(db, async (transaction) => {
+      const docSnap = await transaction.get(wisdomRef);
+      const now = Date.now();
+      
+      if (!docSnap.exists()) {
+        // Doc doesn't exist, create it with a posting lock
+        transaction.set(wisdomRef, { ...wisdom, fb_posting_lock: now });
+        return { status: 'claimed', wisdom };
+      }
+      
+      const currentData = docSnap.data();
+      
+      // If already posted and NOT forcing (cron usually doesn't force), skip
+      if (currentData.fb_posted && !isForce) {
+        return { status: 'already_posted', wisdom: currentData };
+      }
+      
+      // Anti-race condition: If another process is currently posting (within 2 mins), wait
+      if (currentData.fb_posting_lock && (now - currentData.fb_posting_lock < 120000) && !isForce) {
+        return { status: 'locked' };
+      }
+      
+      // Claim the lock and return current data
+      transaction.update(wisdomRef, { fb_posting_lock: now });
+      return { status: 'claimed', wisdom: currentData };
+    });
+
+    if (claimResult.status === 'already_posted') {
+      return response.setHeader('Content-Type', 'text/plain').send('SKIP: A post has already been sent for today.');
+    }
+    
+    if (claimResult.status === 'locked') {
+      return response.setHeader('Content-Type', 'text/plain').send('SKIP: Posting is already in progress (locked).');
+    }
+
+    wisdom = claimResult.wisdom as DailyDrop;
 
     // 4. Randomization Logic (5 AM to 5 PM GMT)
     const currentHour = date.getUTCHours();
@@ -129,7 +175,6 @@ ${wisdom.reflection}
     const meResponse = await fetch(`https://graph.facebook.com/v20.0/me?access_token=${accessToken}`);
     const meData = await meResponse.json();
 
-    const wisdomRef = doc(db, "daily_wisdom", `${dateKey}_${lang}`);
     const fbApiUrl = `https://graph.facebook.com/v20.0/me/feed`;
     const fbResponse = await fetch(fbApiUrl, {
       method: 'POST',

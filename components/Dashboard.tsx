@@ -56,7 +56,18 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
         if (!preferences.receiveDailyDrops) return;
 
         const date = new Date();
-        const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Colombo',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        });
+        const parts = formatter.formatToParts(date);
+        const y = parts.find(p => p.type === 'year')?.value;
+        const m = parts.find(p => p.type === 'month')?.value;
+        const d = parts.find(p => p.type === 'day')?.value;
+        const dateKey = `${y}-${m}-${d}`;
+        
         const lang = preferences.language;
 
         const savedHistory = localStorage.getItem('bodhi_drop_history');
@@ -67,10 +78,6 @@ const Dashboard: React.FC<DashboardProps> = ({ preferences, onLogout, onUpdatePr
 
         // Try global Firebase first (works for both guests and logged-in users)
         try {
-            const date = new Date();
-            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const lang = preferences.language;
-
             today = await getDailyWisdom(dateKey, lang);
 
             if (!today) {

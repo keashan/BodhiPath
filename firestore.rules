@@ -62,7 +62,8 @@ service cloud.firestore {
              (data.timestamp is int || data.timestamp is timestamp) &&
              (!('fb_posted' in data) || data.fb_posted is bool) &&
              (!('fb_posted_at' in data) || (data.fb_posted_at is int || data.fb_posted_at is timestamp)) &&
-             (!('fb_post_id' in data) || (data.fb_post_id is string && data.fb_post_id.size() <= 200));
+             (!('fb_post_id' in data) || (data.fb_post_id is string && data.fb_post_id.size() <= 200)) &&
+             (!('fb_posting_lock' in data) || (data.fb_posting_lock is int || data.fb_posting_lock is timestamp));
     }
 
     function isValidContact(data) {
@@ -92,14 +93,7 @@ service cloud.firestore {
       allow create: if isValidWisdom(request.resource.data);
       allow update: if isAdmin() || (
                        isValidWisdom(request.resource.data) && 
-                       (
-                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fb_posted', 'fb_posted_at', 'fb_post_id']) ||
-                         (
-                           request.resource.data.quote == resource.data.quote &&
-                           request.resource.data.source == resource.data.source &&
-                           request.resource.data.reflection == resource.data.reflection
-                         )
-                       )
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fb_posted', 'fb_posted_at', 'fb_post_id', 'fb_posting_lock'])
                     );
       allow delete: if isAdmin();
     }
