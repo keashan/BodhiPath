@@ -51,7 +51,7 @@ export const getPersonalizedGuidance = async (language: Language, goals: string[
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3.1-flash-lite',
             contents: prompt,
         });
         return response.text || "";
@@ -91,7 +91,7 @@ export const createChatSession = (language: Language, userGoals: string[], isDeb
   }
 
   return ai.chats.create({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-3.1-flash-lite',
     config: {
       systemInstruction: systemInstruction,
       thinkingConfig: { thinkingBudget: 0 } 
@@ -115,7 +115,7 @@ export const createSuttaChatSession = (language: Language): Chat => {
   `;
 
   return ai.chats.create({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-3.1-flash-lite',
     config: {
       systemInstruction: systemInstruction,
       thinkingConfig: { thinkingBudget: 0 }
@@ -131,7 +131,7 @@ export const generateDailyDharma = async (language: Language): Promise<DailyDrop
       : "Provide a short, inspiring quote from the Theravāda Buddhist Pali Canon in English, followed by its source (Sutta name), and a very brief 1-sentence reflection for daily life.";
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -158,7 +158,7 @@ export const generateDailyDharma = async (language: Language): Promise<DailyDrop
       timestamp: Date.now()
     };
   } catch (error) {
-    console.error("Error generating daily dharma:", error);
+    console.error("DEBUG: Error generating daily dharma in geminiService:", error);
     return getFallbackDailyDrop(language);
   }
 };
@@ -182,7 +182,7 @@ export const getMeditationGuide = async (type: string, duration: number, languag
     
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3.1-flash-lite',
             contents: prompt,
         });
         return response.text || "Breathe in, breathe out. Relax your mind.";
@@ -203,7 +203,7 @@ export const getLessonContent = async (topic: string, language: Language): Promi
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3.1-flash-lite',
             contents: prompt,
         });
         return response.text || "Content currently unavailable.";
@@ -220,7 +220,7 @@ export const getMeditationFeedback = async (reflection: string, language: Langua
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3.1-flash-lite',
             contents: prompt,
         });
         return response.text || "Sadhu! Continue your practice.";
@@ -241,7 +241,7 @@ export const askLessonQuestion = async (lessonTitle: string, question: string, l
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3.1-flash-lite',
             contents: prompt,
         });
         return response.text || (language === 'si' ? "මට පිළිතුරු දීමට නොහැක." : "I cannot answer at this moment.");
